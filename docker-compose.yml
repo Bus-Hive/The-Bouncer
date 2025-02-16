@@ -1,0 +1,35 @@
+version: "3.8"
+
+name: The-Bouncer
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: the-bouncer
+    environment:
+      PORT: 9001
+      JDBC_URL: jdbc:postgresql://postgres:5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAX_DB_POOL_SIZE: ${MAX_DB_POOL_SIZE}
+      MAX_SEMAPHORE_PERMITS: ${MAX_SEMAPHORE_PERMITS}
+      MAX_CHUNK_SIZE: ${MAX_CHUNK_SIZE}
+      DB_AUTO_COMMIT: ${DB_AUTO_COMMIT}
+      REDIS_HOST: host.docker.internal
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: ${REDIS_DB}
+    ports:
+      - "9001:9001"
+    networks:
+      - track_my_bus_network
+
+networks:
+  track_my_bus_network:
+    external: true
+
+volumes:
+  postgres_data:

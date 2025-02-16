@@ -34,3 +34,8 @@ out/
 
 ### VS Code ###
 .vscode/
+/src/main/kotlin/com/trackmybus/old/
+/temp/
+.env
+/.kotlin/
+/docs/

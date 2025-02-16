@@ -1,0 +1,35 @@
+openapi: "3.0.3"
+info:
+  title: "The Keg"
+  description: "Application to fetch and display public transport schedules"
+  version: "1.0.0"
+servers:
+  - url: "http://0.0.0.0:8003/the-bouncer/v1"
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags:
+        - health
+      responses:
+        '200':
+          description: Health check successful
+        '500':
+          description: Failed to fetch GTFS data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+        message:
+          type: string
+        details:
+          type: string
