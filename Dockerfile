@@ -33,4 +33,4 @@ EXPOSE 9000
 ENV PORT=9000
 
 # Define the entrypoint to run the Ktor server
-CMD ["java", "-jar", "/app/app.jar"]
+CMD ["java","-XX:-UseContainerSupport", "-jar", "/app/app.jar"]

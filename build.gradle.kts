@@ -74,10 +74,13 @@ dependencies {
     implementation("com.ucasoft.ktor:ktor-simple-redis-cache:0.51.2")
     implementation("com.ucasoft.ktor:ktor-simple-memory-cache:0.51.2")
     testImplementation("com.ucasoft.ktor:ktor-simple-cache:0.51.2")
+
+    // Argon2
+    implementation("org.bouncycastle:bcprov-jdk15to18:1.70")
+
     // Test dependencies
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-
 }
 
 ktlint {

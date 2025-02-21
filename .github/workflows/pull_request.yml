@@ -166,4 +166,4 @@ jobs:
           update-comment: true
           min-coverage-overall: 70
           min-coverage-changed-files: 70
-          coverage-counter-type: LINE
+          coverage-counter-type: INSTRUCTION
