@@ -2,7 +2,7 @@ package com.trackmybus.theBouncer.features.v1.resource
 
 import com.trackmybus.theBouncer.config.TheBouncer
 import com.trackmybus.theBouncer.core.api.respondError
-import com.trackmybus.theBouncer.core.api.respondSuccess
+import com.trackmybus.theBouncer.core.result.ResultHandler.respondResult
 import com.trackmybus.theBouncer.features.v1.domain.dto.AccessTokenDto
 import com.trackmybus.theBouncer.features.v1.domain.dto.RefreshTokenDto
 import com.trackmybus.theBouncer.features.v1.domain.usecase.token.TokenUseCase
@@ -65,7 +65,7 @@ fun Route.refreshTokenRoute() {
         runCatching {
             tokenUseCase.refreshToken(body.refreshToken)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -83,7 +83,7 @@ fun Route.validateAccessTokenRoute() {
         runCatching {
             tokenUseCase.validateAccessToken(body.accessToken)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -101,7 +101,7 @@ fun Route.validateRefreshTokenRoute() {
         runCatching {
             tokenUseCase.validateRefreshToken(body.refreshToken)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -119,7 +119,7 @@ fun Route.revokeSessionRoute() {
         runCatching {
             tokenUseCase.revokeSession(body.refreshToken)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,

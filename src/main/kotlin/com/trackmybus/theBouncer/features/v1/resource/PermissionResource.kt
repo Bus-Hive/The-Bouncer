@@ -2,7 +2,7 @@ package com.trackmybus.theBouncer.features.v1.resource
 
 import com.trackmybus.theBouncer.config.TheBouncer
 import com.trackmybus.theBouncer.core.api.respondError
-import com.trackmybus.theBouncer.core.api.respondSuccess
+import com.trackmybus.theBouncer.core.result.ResultHandler.respondResult
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionRequestDto
 import com.trackmybus.theBouncer.features.v1.domain.usecase.permission.PermissionUseCase
 import io.ktor.http.HttpStatusCode
@@ -55,7 +55,7 @@ fun Route.addPermission() {
                 permission = body.permission,
             )
         }.onSuccess {
-            call.respondSuccess("Permission added successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -77,7 +77,7 @@ fun Route.removePermission() {
         runCatching {
             permissionUseCase.removePermission(resource.permissionId)
         }.onSuccess {
-            call.respondSuccess("Permission removed successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -104,7 +104,7 @@ fun Route.updatePermission() {
                 permission = body.permission,
             )
         }.onSuccess {
-            call.respondSuccess("Permission updated successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -126,7 +126,7 @@ fun Route.getPermission() {
         runCatching {
             permissionUseCase.getPermission(resource.permissionId)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -144,7 +144,7 @@ fun Route.getPermissions() {
         runCatching {
             permissionUseCase.getPermissions()
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -166,7 +166,7 @@ fun Route.getUserPermissions() {
         runCatching {
             permissionUseCase.getPermissionsForUser(resource.userId)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,

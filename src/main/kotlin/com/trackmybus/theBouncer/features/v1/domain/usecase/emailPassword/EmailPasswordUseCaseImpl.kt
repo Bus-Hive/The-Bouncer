@@ -1,5 +1,10 @@
 package com.trackmybus.theBouncer.features.v1.domain.usecase.emailPassword
 
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.ResultHandler.onFailure
+import com.trackmybus.theBouncer.core.result.RootError
+import com.trackmybus.theBouncer.core.result.errors.HashError
+import com.trackmybus.theBouncer.core.result.errors.ValidationError
 import com.trackmybus.theBouncer.features.v1.data.model.AuthProvider
 import com.trackmybus.theBouncer.features.v1.data.model.User
 import com.trackmybus.theBouncer.features.v1.data.model.UserPermissionGroup
@@ -27,13 +32,22 @@ class EmailPasswordUseCaseImpl(
         password: String,
         firstName: String,
         lastName: String,
-    ): Result<Unit> {
-        val isEmailUnique = userRepository.isEmailUnique(email).getOrNull()
+    ): Result<Unit, RootError> {
+        val isEmailUnique =
+            userRepository
+                .isEmailUnique(email)
+                .onFailure {
+                    return Result.Error(it)
+                }.getDataOrNull()
         if (isEmailUnique != true) {
-            return Result.failure(Exception("Email $email is not unique"))
+            return Result.Error(error = ValidationError.EmailAlreadyExists, message = "Email already exists")
         }
 
-        val hashedPassword = passwordHashRepository.hashPassword(password)
+        val hashedPassword =
+            passwordHashRepository.hashPassword(password).onFailure { return Result.Error(it) }.getDataOrNull()
+                ?: return Result.Error(
+                    HashError.HashGenerationFailed,
+                )
 
         val user =
             User(
@@ -46,16 +60,23 @@ class EmailPasswordUseCaseImpl(
             )
 
         val userUUID =
-            userRepository.add(user).getOrNull()
-                ?: return Result.failure(Exception("Error adding user"))
+            userRepository
+                .add(user)
+                .onFailure { return Result.Error(it) }
+                .getDataOrNull()
+                ?.id ?: return Result.Error(
+                ValidationError.UnknownError,
+            )
 
-        val basePermissionGroups = permissionGroupRepository.getBasePermissionGroups()
+        val basePermissionGroups =
+            permissionGroupRepository
+                .getBasePermissionGroups()
+                .onFailure {
+                    return Result.Error(it)
+                }.getDataOrNull()
+                .orEmpty()
 
-        if (basePermissionGroups.isFailure) {
-            return Result.failure(Exception("Error getting base permission groups"))
-        }
-
-        basePermissionGroups.getOrNull()?.forEach { permissionGroup ->
+        basePermissionGroups.forEach { permissionGroup ->
             userPermissionGroupRepository.add(
                 UserPermissionGroup(
                     userId = userUUID,
@@ -64,30 +85,39 @@ class EmailPasswordUseCaseImpl(
             )
         }
 
-        return Result.success(Unit)
+        return Result.Success(Unit)
     }
 
     override suspend fun loginUser(
         email: String,
         password: String,
-    ): Result<TokensDto> {
+    ): Result<TokensDto, RootError> {
         val user =
-            userRepository.getByEmail(email).getOrNull()
-                ?: return Result.failure(Exception("User with email $email not found"))
+            userRepository.getByEmail(email).onFailure { return Result.Error(it) }.getDataOrNull()
+                ?: return Result.Error(ValidationError.UnknownError)
 
-        val isPasswordValid = passwordHashRepository.verifyPassword(password, user.hashedPassword)
+        val isPasswordValid =
+            passwordHashRepository
+                .verifyPassword(password, user.hashedPassword)
+                .onFailure { return Result.Error(it) }
+                .getDataOrNull()
+                ?: return Result.Error(HashError.HashVerificationFailed)
         if (!isPasswordValid) {
-            return Result.failure(Exception("Invalid password"))
+            return Result.Error(error = ValidationError.InvalidCredentials, message = "Invalid credentials")
         }
 
         val accessToken =
-            jwtRepository.generateAccessToken(user).getOrNull()
-                ?: return Result.failure(Exception("Error generating access token"))
+            jwtRepository.generateAccessToken(user).onFailure { return Result.Error(it) }.getDataOrNull()
+                ?: return Result.Error(
+                    ValidationError.UnknownError,
+                )
 
         val refreshToken =
-            jwtRepository.generateRefreshToken(user).getOrNull()
-                ?: return Result.failure(Exception("Error generating refresh token"))
+            jwtRepository.generateRefreshToken(user).onFailure { return Result.Error(it) }.getDataOrNull()
+                ?: return Result.Error(
+                    ValidationError.UnknownError,
+                )
 
-        return Result.success(TokensDto(accessToken, refreshToken))
+        return Result.Success(TokensDto(accessToken, refreshToken), message = "Successfully logged in")
     }
 }

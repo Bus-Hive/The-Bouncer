@@ -2,7 +2,7 @@ package com.trackmybus.theBouncer.features.v1.resource
 
 import com.trackmybus.theBouncer.config.TheBouncer
 import com.trackmybus.theBouncer.core.api.respondError
-import com.trackmybus.theBouncer.core.api.respondSuccess
+import com.trackmybus.theBouncer.core.result.ResultHandler.respondResult
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionGroupRequestDto
 import com.trackmybus.theBouncer.features.v1.domain.usecase.permissionGroup.PermissionGroupUseCase
 import io.ktor.http.HttpStatusCode
@@ -71,7 +71,7 @@ fun Route.addPermissionGroup() {
                 isBaseUserGroup = body.isBaseUserGroup,
             )
         }.onSuccess {
-            call.respondSuccess("Permission group added successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -93,7 +93,7 @@ fun Route.removePermissionGroup() {
         runCatching {
             permissionGroupUseCase.removePermissionGroup(resource.groupId)
         }.onSuccess {
-            call.respondSuccess("Permission group removed successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -120,7 +120,7 @@ fun Route.updatePermissionGroup() {
                 isBaseUserGroup = body.isBaseUserGroup,
             )
         }.onSuccess {
-            call.respondSuccess("Permission group updated successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -149,7 +149,7 @@ fun Route.assignPermissionToGroup() {
                 permissionId = resource.permissionId,
             )
         }.onSuccess {
-            call.respondSuccess("Permission assigned to group successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -178,7 +178,7 @@ fun Route.removePermissionFromGroup() {
                 permissionId = resource.permissionId,
             )
         }.onSuccess {
-            call.respondSuccess("Permission removed from group successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -200,7 +200,7 @@ fun Route.getPermissionGroup() {
         runCatching {
             permissionGroupUseCase.getPermissionGroup(resource.groupId)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -218,7 +218,7 @@ fun Route.getPermissionGroups() {
         runCatching {
             permissionGroupUseCase.getPermissionGroups()
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -236,7 +236,7 @@ fun Route.getBasePermissionGroups() {
         runCatching {
             permissionGroupUseCase.getBasePermissionGroups()
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -258,7 +258,7 @@ fun Route.getPermissionGroupsByUserId() {
         runCatching {
             permissionGroupUseCase.getPermissionGroupsByUserId(resource.userId)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -284,7 +284,7 @@ fun Route.addUserToPermissionGroup() {
         runCatching {
             permissionGroupUseCase.assignUserToGroup(resource.userId, resource.parent.groupId)
         }.onSuccess {
-            call.respondSuccess("User added to group successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -310,7 +310,7 @@ fun Route.removeUserFromPermissionGroup() {
         runCatching {
             permissionGroupUseCase.removeUserFromGroup(resource.userId, resource.parent.groupId)
         }.onSuccess {
-            call.respondSuccess("User removed from group successfully")
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,

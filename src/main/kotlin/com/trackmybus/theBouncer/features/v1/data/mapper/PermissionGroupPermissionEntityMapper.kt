@@ -1,10 +1,14 @@
 package com.trackmybus.theBouncer.features.v1.data.mapper
 
-import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import kotlin.getValue
+import com.trackmybus.theBouncer.features.v1.data.entity.PermissionGroupPermissionEntity
+import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroupPermission
 
-object PermissionGroupPermissionEntityMapper : KoinComponent {
-    private val dbFactory: DatabaseFactory by inject()
+object PermissionGroupPermissionEntityMapper {
+    fun PermissionGroupPermissionEntity.toModel() =
+        PermissionGroupPermission(
+            permissionGroupId = this.permissionGroupId.value,
+            permissionId = permissionId.value,
+        )
+
+    fun List<PermissionGroupPermissionEntity>.toModel() = map { it.toModel() }
 }

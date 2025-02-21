@@ -2,8 +2,12 @@ package com.trackmybus.theBouncer.features.v1.domain.mapper
 
 import com.trackmybus.theBouncer.features.v1.data.model.Permission
 import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroupPermission
+import com.trackmybus.theBouncer.features.v1.data.model.UserPermissionGroup
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionDto
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionGroupDto
+import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionGroupPermissionDto
+import com.trackmybus.theBouncer.features.v1.domain.dto.UserPermissionGroupDto
 
 object DTOMapper {
     fun Permission.toDto() =
@@ -31,5 +35,17 @@ object DTOMapper {
             description = description,
             createdAt = createdAt,
             isBaseUserGroup = isBaseUserGroup,
+        )
+
+    fun PermissionGroupPermission.toDto() =
+        PermissionGroupPermissionDto(
+            permissionGroupId = permissionGroupId,
+            permissionId = permissionId,
+        )
+
+    fun UserPermissionGroup.toDto() =
+        UserPermissionGroupDto(
+            userId = userId.toString(),
+            permissionGroupId = permissionGroupId,
         )
 }

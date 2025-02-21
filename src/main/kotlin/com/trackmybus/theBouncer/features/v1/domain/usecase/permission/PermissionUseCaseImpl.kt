@@ -1,6 +1,8 @@
 package com.trackmybus.theBouncer.features.v1.domain.usecase.permission
 
 import com.trackmybus.theBouncer.core.mapper.ResultMapper.mapResult
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.RootError
 import com.trackmybus.theBouncer.features.v1.data.model.Permission
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionDto
 import com.trackmybus.theBouncer.features.v1.domain.mapper.DTOMapper.toDto
@@ -19,19 +21,20 @@ class PermissionUseCaseImpl(
         name: String,
         description: String,
         permission: String,
-    ): Result<Int> {
+    ): Result<PermissionDto, RootError> {
         logger.info("Adding permission with name: $name")
-        return permissionRepository.add(
-            Permission(
-                name = name,
-                description = description,
-                permission = permission,
-                createdAt = Clock.System.now().toLocalDateTime(UTC),
-            ),
-        )
+        return permissionRepository
+            .add(
+                Permission(
+                    name = name,
+                    description = description,
+                    permission = permission,
+                    createdAt = Clock.System.now().toLocalDateTime(UTC),
+                ),
+            ).mapResult { it.toDto() }
     }
 
-    override suspend fun removePermission(permissionId: Int): Result<Unit> {
+    override suspend fun removePermission(permissionId: Int): Result<Unit, RootError> {
         logger.info("Removing permission with id: $permissionId")
         return permissionRepository.deleteById(permissionId)
     }
@@ -41,30 +44,31 @@ class PermissionUseCaseImpl(
         name: String,
         description: String,
         permission: String,
-    ): Result<Unit> {
+    ): Result<PermissionDto, RootError> {
         logger.info("Updating permission with id: $permissionId")
-        return permissionRepository.update(
-            Permission(
-                id = permissionId,
-                name = name,
-                description = description,
-                permission = permission,
-                createdAt = Clock.System.now().toLocalDateTime(UTC),
-            ),
-        )
+        return permissionRepository
+            .update(
+                Permission(
+                    id = permissionId,
+                    name = name,
+                    description = description,
+                    permission = permission,
+                    createdAt = Clock.System.now().toLocalDateTime(UTC),
+                ),
+            ).mapResult { it.toDto() }
     }
 
-    override suspend fun getPermission(permissionId: Int): Result<PermissionDto?> {
+    override suspend fun getPermission(permissionId: Int): Result<PermissionDto, RootError> {
         logger.info("Getting permission with id: $permissionId")
-        return permissionRepository.getById(permissionId).mapResult { it?.toDto() }
+        return permissionRepository.getById(permissionId).mapResult { it.toDto() }
     }
 
-    override suspend fun getPermissions(): Result<List<PermissionDto>> {
+    override suspend fun getPermissions(): Result<List<PermissionDto>, RootError> {
         logger.info("Getting all permissions")
         return permissionRepository.getAll().mapResult { it.map { permission -> permission.toDto() } }
     }
 
-    override suspend fun getPermissionsForUser(userId: String): Result<List<PermissionDto>> {
+    override suspend fun getPermissionsForUser(userId: String): Result<List<PermissionDto>, RootError> {
         logger.info("Getting permissions for user with id: $userId")
         return permissionRepository
             .getPermissionsByUserId(UUID.fromString(userId))

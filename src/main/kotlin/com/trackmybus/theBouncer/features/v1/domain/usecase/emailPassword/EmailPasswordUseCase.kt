@@ -1,5 +1,7 @@
 package com.trackmybus.theBouncer.features.v1.domain.usecase.emailPassword
 
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.RootError
 import com.trackmybus.theBouncer.features.v1.domain.dto.TokensDto
 
 interface EmailPasswordUseCase {
@@ -8,10 +10,10 @@ interface EmailPasswordUseCase {
         password: String,
         firstName: String,
         lastName: String,
-    ): Result<Unit>
+    ): Result<Unit, RootError>
 
     suspend fun loginUser(
         email: String,
         password: String,
-    ): Result<TokensDto>
+    ): Result<TokensDto, RootError>
 }

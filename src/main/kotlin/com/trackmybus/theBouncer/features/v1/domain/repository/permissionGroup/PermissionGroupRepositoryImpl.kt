@@ -1,10 +1,13 @@
 package com.trackmybus.theBouncer.features.v1.domain.repository.permissionGroup
 
+import com.trackmybus.theBouncer.core.mapper.ResultMapper.mapResult
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.RootError
 import com.trackmybus.theBouncer.features.v1.data.dao.permissionGroup.PermissionGroupDao
 import com.trackmybus.theBouncer.features.v1.data.dao.permissionGroupPermission.PermissionGroupPermissionDao
 import com.trackmybus.theBouncer.features.v1.data.dao.userPermissionGroup.UserPermissionGroupDao
-import com.trackmybus.theBouncer.features.v1.data.mapper.UserPermissionGroupEntityMapper.toModel
 import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroupPermission
 import io.ktor.util.logging.Logger
 import java.util.UUID
 
@@ -14,38 +17,39 @@ class PermissionGroupRepositoryImpl(
     private val permissionGroupPermissionDao: PermissionGroupPermissionDao,
     private val userPermissionGroupDao: UserPermissionGroupDao,
 ) : PermissionGroupRepository {
-    override suspend fun addPermissionGroup(permissionGroup: PermissionGroup): Result<PermissionGroup> =
+    override suspend fun addPermissionGroup(permissionGroup: PermissionGroup): Result<PermissionGroup, RootError> =
         permissionGroupDao.addPermissionGroup(permissionGroup)
 
-    override suspend fun getPermissionGroup(permissionGroupId: Int): Result<PermissionGroup?> =
+    override suspend fun getPermissionGroup(permissionGroupId: Int): Result<PermissionGroup, RootError> =
         permissionGroupDao.getPermissionGroup(permissionGroupId)
 
-    override suspend fun getPermissionGroups(): Result<List<PermissionGroup>> = permissionGroupDao.getPermissionGroups()
+    override suspend fun getPermissionGroups(): Result<List<PermissionGroup>, RootError> = permissionGroupDao.getPermissionGroups()
 
-    override suspend fun getBasePermissionGroups(): Result<List<PermissionGroup>> = permissionGroupDao.getBasePermissionGroups()
+    override suspend fun getBasePermissionGroups(): Result<List<PermissionGroup>, RootError> = permissionGroupDao.getBasePermissionGroups()
 
-    override suspend fun updatePermissionGroup(permissionGroup: PermissionGroup): Result<PermissionGroup> =
+    override suspend fun updatePermissionGroup(permissionGroup: PermissionGroup): Result<PermissionGroup, RootError> =
         permissionGroupDao.updatePermissionGroup(permissionGroup)
 
-    override suspend fun deletePermissionGroup(permissionGroupId: Int): Result<Boolean> =
+    override suspend fun deletePermissionGroup(permissionGroupId: Int): Result<Boolean, RootError> =
         permissionGroupDao.deletePermissionGroup(permissionGroupId)
 
-    override suspend fun getPermissionGroupsByUserId(userId: UUID): Result<List<PermissionGroup>> =
-        userPermissionGroupDao.getUserPermissionGroupsByUserId(userId).map {
-            it.toModel().map {
-                it.permissionGroupId
-                    ?.let { permissionGroupId -> permissionGroupDao.getPermissionGroup(permissionGroupId) }
-                    ?.getOrNull() ?: throw Exception("Permission group not found")
+    override suspend fun getPermissionGroupsByUserId(userId: UUID): Result<List<PermissionGroup>, RootError> =
+        userPermissionGroupDao.getUserPermissionGroupsByUserId(userId).mapResult { userPermissionGroup ->
+            userPermissionGroup.mapNotNull { userPermissionGroup ->
+                userPermissionGroup.permissionGroupId?.let { permissionGroupId ->
+                    permissionGroupDao.getPermissionGroup(permissionGroupId).getDataOrNull()
+                }
             }
         }
 
     override suspend fun addPermissionToGroup(
         permissionGroupId: Int,
         permissionId: Int,
-    ): Result<Boolean> = permissionGroupPermissionDao.addPermissionGroupPermission(permissionGroupId, permissionId)
+    ): Result<PermissionGroupPermission, RootError> =
+        permissionGroupPermissionDao.addPermissionGroupPermission(permissionGroupId, permissionId)
 
     override suspend fun removePermissionFromGroup(
         permissionGroupId: Int,
         permissionId: Int,
-    ): Result<Boolean> = permissionGroupPermissionDao.deletePermissionGroupPermission(permissionGroupId, permissionId)
+    ): Result<Unit, RootError> = permissionGroupPermissionDao.deletePermissionGroupPermission(permissionGroupId, permissionId)
 }

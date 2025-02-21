@@ -2,7 +2,7 @@ package com.trackmybus.theBouncer.features.v1.resource
 
 import com.trackmybus.theBouncer.config.TheBouncer
 import com.trackmybus.theBouncer.core.api.respondError
-import com.trackmybus.theBouncer.core.api.respondSuccess
+import com.trackmybus.theBouncer.core.result.ResultHandler.respondResult
 import com.trackmybus.theBouncer.features.v1.domain.dto.emailAndPassword.LoginRequestDto
 import com.trackmybus.theBouncer.features.v1.domain.dto.emailAndPassword.RegisterRequestDto
 import com.trackmybus.theBouncer.features.v1.domain.usecase.emailPassword.EmailPasswordUseCase
@@ -44,7 +44,7 @@ fun Route.loginRoute() {
         runCatching {
             emailPasswordUseCase.loginUser(body.email, body.password)
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,
@@ -67,7 +67,7 @@ fun Route.registerRoute() {
                 lastName = body.lastName,
             )
         }.onSuccess {
-            call.respondSuccess(it.getOrNull())
+            call.respondResult(it)
         }.onFailure {
             call.respondError(
                 statusCode = HttpStatusCode.InternalServerError,

@@ -1,9 +1,12 @@
 package com.trackmybus.theBouncer.features.v1.data.dao.permission
 
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.ResultHandler.addMessage
+import com.trackmybus.theBouncer.core.result.ResultHandler.onFailure
+import com.trackmybus.theBouncer.core.result.RootError
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.features.v1.data.entity.PermissionEntity
-import com.trackmybus.theBouncer.features.v1.data.mapper.PermissionEntityMapper.toEntities
-import com.trackmybus.theBouncer.features.v1.data.mapper.PermissionEntityMapper.toEntity
+import com.trackmybus.theBouncer.features.v1.data.mapper.PermissionEntityMapper.toModel
 import com.trackmybus.theBouncer.features.v1.data.model.Permission
 import io.ktor.util.logging.Logger
 
@@ -11,74 +14,107 @@ class PermissionDaoImpl(
     private val logger: Logger,
     private val dbFactory: DatabaseFactory,
 ) : PermissionDao {
-    override suspend fun getAllPermissions(): Result<List<PermissionEntity>> =
-        runCatching {
-            dbFactory.dbQuery {
-                PermissionEntity.all().toList()
+    override suspend fun getAllPermissions(): Result<List<Permission>, RootError> =
+        dbFactory
+            .dbQuery {
+                PermissionEntity.all().toList().toModel()
+            }.addMessage(
+                success = "Successfully fetched all permissions",
+                failure = "Error fetching all permissions",
+            ).onFailure {
+                logger.error("Error getting all permissions")
             }
-        }.onFailure {
-            logger.error("Error getting all permissions", it)
-        }
 
-    override suspend fun getPermissionById(id: Int): Result<PermissionEntity?> =
-        runCatching {
-            dbFactory.dbQuery {
-                PermissionEntity.findById(id.toInt())
+    override suspend fun getPermissionById(id: Int): Result<Permission, RootError> =
+        dbFactory
+            .dbQuery {
+                PermissionEntity.findById(id.toInt())?.toModel()
+            }.addMessage(
+                success = "Successfully fetched permission by id: $id",
+                failure = "Error getting permission by id: $id",
+            ).onFailure {
+                logger.error("Error getting permission by id: $id")
             }
-        }.onFailure {
-            logger.error("Error getting permission by id: $id", it)
-        }
 
-    override suspend fun addPermission(permission: Permission): Result<Int> =
-        runCatching {
-            permission.toEntity()
-        }.onFailure {
-            logger.error("Error adding permission: ${permission.name}, ${permission.description}", it)
-        }
+    override suspend fun addPermission(permission: Permission): Result<Permission, RootError> =
+        dbFactory
+            .dbQuery {
+                PermissionEntity
+                    .new {
+                        this.name = permission.name
+                        this.description = permission.description
+                        this.permission = permission.permission
+                        this.createdAt = permission.createdAt
+                    }.toModel()
+            }.addMessage(
+                success = "Successfully added permission: ${permission.name}, ${permission.description}",
+                failure = "Error adding permission: ${permission.name}, ${permission.description}",
+            ).onFailure {
+                logger.error("Error adding permission: ${permission.name}, ${permission.description}")
+            }
 
-    override suspend fun addPermissions(permissions: List<Permission>): Result<Unit> =
-        runCatching {
-            permissions.toEntities()
-        }.onFailure {
-            logger.error("Error adding permissions: $permissions", it)
-        }
+    override suspend fun addPermissions(permissions: List<Permission>): Result<Unit, RootError> =
+        dbFactory
+            .dbQuery {
+                permissions.forEach {
+                    require(it.id == null) {
+                        "Cannot create entity with non-null id"
+                    }
 
-    override suspend fun updatePermission(permission: Permission): Result<Unit> =
-        runCatching {
-            dbFactory.dbQuery {
-                permission.id?.let {
-                    PermissionEntity.findByIdAndUpdate(it) {
-                        it.name = permission.name
-                        it.description = permission.description
-                        it.name = permission.name
+                    PermissionEntity.new {
+                        this.name = it.name
+                        this.description = it.description
+                        permission = this.permission
+                        this.createdAt = it.createdAt
                     }
                 }
+            }.addMessage(
+                success = "Successfully added permissions: ${permissions.joinToString { it.name }}",
+                failure = "Error adding permissions: $permissions",
+            ).onFailure {
+                logger.error("Error adding permissions: $permissions")
             }
-            Unit
-        }.onFailure {
-            logger.error(
-                "Error updating permission: ${permission.id}, ${permission.name}, ${permission.description}",
-                it,
-            )
-        }
 
-    override suspend fun deletePermission(id: Int): Result<Unit> =
-        runCatching {
-            dbFactory.dbQuery {
+    override suspend fun updatePermission(permission: Permission): Result<Permission, RootError> =
+        dbFactory
+            .dbQuery {
+                permission.id?.let {
+                    PermissionEntity
+                        .findByIdAndUpdate(it) {
+                            it.name = permission.name
+                            it.description = permission.description
+                            it.name = permission.name
+                        }?.toModel()
+                }
+            }.addMessage(
+                success = "Successfully updated permission: ${permission.id}, ${permission.name}, ${permission.description}",
+                failure = "Error updating permission: ${permission.id}, ${permission.name}, ${permission.description}",
+            ).onFailure {
+                logger.error(
+                    "Error updating permission: ${permission.id}, ${permission.name}, ${permission.description}",
+                    it,
+                )
+            }
+
+    override suspend fun deletePermission(id: Int): Result<Unit, RootError> =
+        dbFactory
+            .dbQuery {
                 PermissionEntity.findById(id)?.delete()
+            }.addMessage(
+                success = "Successfully deleted permission by id: $id",
+                failure = "Error deleting permission by id: $id",
+            ).onFailure {
+                logger.error("Error deleting permission by id: $id")
             }
-            Unit
-        }.onFailure {
-            logger.error("Error deleting permission by id: $id", it)
-        }
 
-    override suspend fun deleteAllPermissions(): Result<Unit> =
-        runCatching {
-            dbFactory.dbQuery {
+    override suspend fun deleteAllPermissions(): Result<Unit, RootError> =
+        dbFactory
+            .dbQuery {
                 PermissionEntity.all().forEach { it.delete() }
+            }.addMessage(
+                success = "Successfully deleted all permissions",
+                failure = "Error deleting all permissions",
+            ).onFailure {
+                logger.error("Error deleting all permissions")
             }
-            Unit
-        }.onFailure {
-            logger.error("Error deleting all permissions", it)
-        }
 }
