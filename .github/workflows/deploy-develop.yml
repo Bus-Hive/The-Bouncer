@@ -38,10 +38,12 @@ jobs:
               NEW_VERSION="green"
               NEW_PORT=8090
               OLD_VERSION="blue"
+              OLD_PORT=8091
             else
               NEW_VERSION="blue"
               NEW_PORT=8091
               OLD_VERSION="green"
+              OLD_PORT=8090
             fi
   
             echo "Deploying new version to $NEW_VERSION..."
@@ -76,7 +78,7 @@ jobs:
             # Gradually shift traffic to new version
             for i in $(seq 10 10 100); do
               curl -X PATCH http://10.0.0.93:8001/upstreams/the-bouncer/targets/10.0.0.91:$NEW_PORT -d "weight=$i"
-              curl -X PATCH http://10.0.0.93:8001/upstreams/the-bouncer/targets/10.0.0.91:$(( (OLD_VERSION == "blue") ? 8091 : 8090 )) -d "weight=$((100-i))"
+              curl -X PATCH http://10.0.0.93:8001/upstreams/the-bouncer/targets/10.0.0.91:$OLD_PORT -d "weight=$((100-i))"
               echo "Traffic shifted: $i% to $NEW_VERSION"
               sleep 5
             done
