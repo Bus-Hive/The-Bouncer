@@ -33,6 +33,18 @@ class EmailPasswordUseCaseImpl(
         firstName: String,
         lastName: String,
     ): Result<Unit, RootError> {
+        if (email.isBlank() || password.isBlank() || firstName.isBlank() || lastName.isBlank()) {
+            return Result.Error(error = ValidationError.EmptyField, message = "Empty field")
+        }
+
+        if (!password.matches(Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=])(?=\\S+\$).{8,}\$"))) {
+            return Result.Error(error = ValidationError.InvalidCredentials, message = "Invalid password")
+        }
+
+        if (!email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))) {
+            return Result.Error(error = ValidationError.InvalidEmail, message = "Invalid email")
+        }
+
         val isEmailUnique =
             userRepository
                 .isEmailUnique(email)
@@ -92,6 +104,18 @@ class EmailPasswordUseCaseImpl(
         email: String,
         password: String,
     ): Result<TokensDto, RootError> {
+        if (email.isBlank() || password.isBlank()) {
+            return Result.Error(error = ValidationError.EmptyField, message = "Empty field")
+        }
+
+        if (!password.matches(Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=])(?=\\S+\$).{8,}\$"))) {
+            return Result.Error(error = ValidationError.InvalidCredentials, message = "Invalid password")
+        }
+
+        if (!email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))) {
+            return Result.Error(error = ValidationError.InvalidEmail, message = "Invalid email")
+        }
+
         val user =
             userRepository.getByEmail(email).onFailure { return Result.Error(it) }.getDataOrNull()
                 ?: return Result.Error(ValidationError.UnknownError)

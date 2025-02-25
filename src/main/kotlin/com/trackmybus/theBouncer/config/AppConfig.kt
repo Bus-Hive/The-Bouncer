@@ -10,6 +10,8 @@ data class ServerConfig(
 data class PostgresConfig(
     val driverClass: String,
     val jdbcUrl: String,
+    val host: String,
+    val port: Int,
     val database: String,
     val user: String,
     val password: String,
@@ -59,6 +61,12 @@ fun Application.setupConfig() {
 
     // Postgres
     val driverClass = environment.config.property("postgres.driverClass").getString()
+    val host = environment.config.property("postgres.host").getString()
+    val port =
+        environment.config
+            .property("postgres.port")
+            .getString()
+            .toInt()
     val database = environment.config.property("postgres.database").getString()
     val jdbcUrl = environment.config.property("postgres.jdbcURL").getString()
     val user = environment.config.property("postgres.user").getString()
@@ -78,6 +86,8 @@ fun Application.setupConfig() {
         PostgresConfig(
             driverClass = driverClass,
             jdbcUrl = jdbcUrl,
+            host = host,
+            port = port,
             database = database,
             user = user,
             password = password,

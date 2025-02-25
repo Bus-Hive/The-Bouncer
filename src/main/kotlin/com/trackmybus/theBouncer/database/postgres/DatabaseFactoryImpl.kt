@@ -32,6 +32,8 @@ class DatabaseFactoryImpl(
                         ) {
                             databaseUrlBuilder(
                                 jdbcUrl = postgresConfig.jdbcUrl,
+                                host = postgresConfig.host,
+                                port = postgresConfig.port,
                                 defaultDatabase = postgresConfig.database,
                                 user = postgresConfig.user,
                                 password = postgresConfig.password,
@@ -76,10 +78,12 @@ class DatabaseFactoryImpl(
 
     private fun databaseUrlBuilder(
         jdbcUrl: String,
+        host: String,
+        port: Int,
         defaultDatabase: String,
         user: String,
         password: String,
-    ) = "$jdbcUrl/$defaultDatabase?user=$user&password=$password"
+    ) = "$jdbcUrl$host:$port/$defaultDatabase?user=$user&password=$password"
 
     override suspend fun <T> dbQuery(block: suspend () -> T?): Result<T, DataError.Local> =
         try {

@@ -7,6 +7,10 @@ sealed interface ValidationError : Error {
         override val defaultCode = HttpStatusCode.Companion.BadRequest
     }
 
+    data object WeakPassword : ValidationError {
+        override val defaultCode = HttpStatusCode.Companion.BadRequest
+    }
+
     data object EmptyField : ValidationError {
         override val defaultCode = HttpStatusCode.Companion.BadRequest
     }

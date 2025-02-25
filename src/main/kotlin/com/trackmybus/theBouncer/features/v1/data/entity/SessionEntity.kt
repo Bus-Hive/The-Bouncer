@@ -4,11 +4,11 @@ import com.trackmybus.theBouncer.features.v1.data.tables.SessionsTable
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
-import java.util.*
+import java.util.UUID
 
 class SessionEntity(
     id: EntityID<UUID>,
-): Entity<UUID>(id) {
+) : Entity<UUID>(id) {
     companion object : EntityClass<UUID, SessionEntity>(SessionsTable)
 
     var sessionId by SessionsTable.sessionId

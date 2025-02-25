@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package com.trackmybus.theBouncer.di
 
 import com.trackmybus.theBouncer.config.AppConfig
@@ -12,7 +14,7 @@ val configModule =
             DatabaseFactoryImpl(
                 getLogger<DatabaseFactoryImpl>(),
                 get(),
-                get()
+                get(),
             )
         }
         single { get<DatabaseFactory>().database }

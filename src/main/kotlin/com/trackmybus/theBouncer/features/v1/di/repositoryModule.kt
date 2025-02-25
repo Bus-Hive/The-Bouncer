@@ -22,9 +22,29 @@ import org.koin.dsl.module
 val repositoryModule =
     module {
         single<UserRepository> { UserRepositoryImpl(getLogger<UserRepository>(), get()) }
-        single<PermissionRepository> { PermissionRepositoryImpl(getLogger<PermissionRepository>(), get(), get(), get(), get()) }
-        single<PermissionGroupRepository> { PermissionGroupRepositoryImpl(getLogger<PermissionGroupRepository>(), get(), get(), get()) }
-        single<UserPermissionGroupRepository> { UserPermissionGroupRepositoryImpl(getLogger<UserPermissionGroupRepository>(), get()) }
+        single<PermissionRepository> {
+            PermissionRepositoryImpl(
+                getLogger<PermissionRepository>(),
+                get(),
+                get(),
+                get(),
+                get(),
+            )
+        }
+        single<PermissionGroupRepository> {
+            PermissionGroupRepositoryImpl(
+                getLogger<PermissionGroupRepository>(),
+                get(),
+                get(),
+                get(),
+            )
+        }
+        single<UserPermissionGroupRepository> {
+            UserPermissionGroupRepositoryImpl(
+                getLogger<UserPermissionGroupRepository>(),
+                get(),
+            )
+        }
         single<SessionRepository> { SessionRepositoryImpl(getLogger<SessionRepository>(), get()) }
         single<PasswordHashRepository> { PasswordHashRepositoryImpl(getLogger<PasswordHashRepository>(), get()) }
         single<JwtRepository> { JwtRepositoryImpl(getLogger<JwtRepository>(), get(), get(), get(), get()) }
