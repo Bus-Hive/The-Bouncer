@@ -11,41 +11,39 @@ interface PermissionGroupUseCase {
         name: String,
         description: String,
         isBaseUserGroup: Boolean,
-    ): com.trackmybus.theBouncer.core.result.Result<PermissionGroupDto, RootError>
+    ): Result<PermissionGroupDto, RootError>
 
-    suspend fun removePermissionGroup(permissionGroupId: Int): com.trackmybus.theBouncer.core.result.Result<Boolean, RootError>
+    suspend fun removePermissionGroup(permissionGroupId: Int): Result<Boolean, RootError>
 
     suspend fun updatePermissionGroup(
         permissionGroupId: Int,
         name: String,
         description: String,
         isBaseUserGroup: Boolean,
-    ): com.trackmybus.theBouncer.core.result.Result<PermissionGroupDto, RootError>
+    ): Result<PermissionGroupDto, RootError>
 
     suspend fun assignPermissionToGroup(
         permissionId: Int,
         permissionGroupId: Int,
-    ): com.trackmybus.theBouncer.core.result.Result<PermissionGroupPermissionDto, RootError>
+    ): Result<PermissionGroupPermissionDto, RootError>
 
     suspend fun removePermissionFromGroup(
         permissionId: Int,
         permissionGroupId: Int,
-    ): com.trackmybus.theBouncer.core.result.Result<Unit, RootError>
+    ): Result<Unit, RootError>
 
-    suspend fun getPermissionGroup(permissionGroupId: Int): com.trackmybus.theBouncer.core.result.Result<PermissionGroupDto, RootError>
+    suspend fun getPermissionGroup(permissionGroupId: Int): Result<PermissionGroupDto, RootError>
 
-    suspend fun getPermissionGroups(): com.trackmybus.theBouncer.core.result.Result<List<PermissionGroupDto>, RootError>
+    suspend fun getPermissionGroups(): Result<List<PermissionGroupDto>, RootError>
 
-    suspend fun getBasePermissionGroups(): com.trackmybus.theBouncer.core.result.Result<List<PermissionGroupDto>, RootError>
+    suspend fun getBasePermissionGroups(): Result<List<PermissionGroupDto>, RootError>
 
-    suspend fun getPermissionGroupsByUserId(
-        userId: String,
-    ): com.trackmybus.theBouncer.core.result.Result<List<PermissionGroupDto>, RootError>
+    suspend fun getPermissionGroupsByUserId(userId: String): Result<List<PermissionGroupDto>, RootError>
 
     suspend fun assignUserToGroup(
         userId: String,
         permissionGroupId: Int,
-    ): com.trackmybus.theBouncer.core.result.Result<UserPermissionGroupDto, RootError>
+    ): Result<UserPermissionGroupDto, RootError>
 
     suspend fun removeUserFromGroup(
         userId: String,

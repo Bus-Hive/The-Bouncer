@@ -1,8 +1,6 @@
 package com.trackmybus.theBouncer
 
-import com.trackmybus.theBouncer.config.configureDatabases
 import com.trackmybus.theBouncer.config.configureRouting
-import com.trackmybus.theBouncer.config.setupConfig
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.di.configureKoinUnitTest
 import io.ktor.client.request.get
@@ -27,19 +25,35 @@ class ApplicationTest : KoinTest {
             application {
                 (environment.config as MapApplicationConfig).apply {
                     put("ktor.server.isProd", "false")
-                    put("postgres.driverClass", "org.postgresql.Driver")
-                    put("postgres.jdbcURL", "jdbc:postgresql://localhost:5432/mydb")
-                    put("postgres.database", "mydb")
-                    put("postgres.user", "user")
-                    put("postgres.password", "password")
-                    put("postgres.maxPoolSize", "10")
+                    put("postgres.driverClass", "org.h2.Driver")
+                    put("postgres.jdbcURL", "jdbc:h2:mem:;DATABASE_TO_UPPER=false;MODE=MYSQL")
+                    put("postgres.database", "")
+                    put("postgres.host", "localhost")
+                    put("postgres.port", "5432")
+                    put("postgres.user", "")
+                    put("postgres.password", "")
+                    put("postgres.maxPoolSize", "1")
                     put("postgres.autoCommit", "true")
+
                     put("redis.host", "localhost")
                     put("redis.port", "6379")
                     put("redis.password", "password")
                     put("redis.database", "0")
+
+                    put("password.saltLength", "16")
+                    put("password.iterations", "10000")
+                    put("password.hashLength", "64")
+                    put("password.memoryKb", "12345")
+                    put("password.parallelism", "1")
+
+                    put("jwt.secret", "secret")
+                    put("jwt.issuer", "issuer")
+                    put("jwt.audience", "audience")
+                    put("jwt.realm", "3600")
+                    put("jwt.accessTokenValiditySeconds", "3600")
+                    put("jwt.refreshTokenValiditySeconds", "3600")
                 }
-                setupConfig()
+                module()
             }
             configureKoinUnitTest()
 
@@ -56,7 +70,6 @@ class ApplicationTest : KoinTest {
     @Test
     fun databaseConnectionEstablished() =
         testApplication {
-            application { configureDatabases() }
             assertTrue(databaseFactory.database.url.isNotEmpty())
         }
 

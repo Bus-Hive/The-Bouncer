@@ -40,7 +40,6 @@ fun Application.emailAndPasswordRoutes() {
 fun Route.loginRoute() {
     val emailPasswordUseCase: EmailPasswordUseCase by application.inject()
     post<EmailAndPassword.Login, LoginRequestDto> { resource, body ->
-        print(body)
         runCatching {
             emailPasswordUseCase.loginUser(body.email, body.password)
         }.onSuccess {

@@ -43,19 +43,6 @@ class PermissionRepositoryImpl(
                 it.onFailure { logger.error("Error adding permission: ${permission.name}") }
             }
 
-    override suspend fun add(permissions: List<Permission>): Result<Unit, RootError> =
-        permissionDao
-            .addPermissions(permissions)
-            .also {
-                it.onSuccess { logger.info("Successfully added permissions: ${permissions.joinToString { it.name }}") }
-                it.onFailure {
-                    logger.error(
-                        "Error adding permissions: ${permissions.joinToString { it.name }}",
-                        it,
-                    )
-                }
-            }
-
     override suspend fun update(permission: Permission): Result<Permission, RootError> =
         permissionDao
             .updatePermission(permission)

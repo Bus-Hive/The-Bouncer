@@ -16,6 +16,13 @@ class PasswordHashRepositoryImpl(
 ) : PasswordHashRepository {
     override fun hashPassword(password: String): Result<String, RootError> {
         try {
+            if (password.isEmpty()) {
+                return Result.Error(
+                    HashError.InvalidArgument,
+                    data = null,
+                    message = "Password cannot be empty",
+                )
+            }
             val salt =
                 ByteArray(appConfig.passwordHashConfig.saltLength).apply {
                     SecureRandom().nextBytes(this)

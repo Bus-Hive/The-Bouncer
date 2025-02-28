@@ -1,3 +1,5 @@
+import com.trackmybus.theBouncer.core.result.ResultHandler.isFailure
+import com.trackmybus.theBouncer.core.result.ResultHandler.isSuccess
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.di.configureKoinUnitTest
 import com.trackmybus.theBouncer.features.v1.data.dao.session.SessionDao
@@ -46,6 +48,7 @@ class SessionDaoTest : KoinTest {
                     User(
                         firstName = "John",
                         lastName = "Doe",
+                        email = "u2",
                         hashedPassword = "hashedPassword",
                         provider = AuthProvider.EMAIL_PASSWORD,
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
@@ -57,6 +60,7 @@ class SessionDaoTest : KoinTest {
                     User(
                         firstName = "John",
                         lastName = "Doe",
+                        email = "u2",
                         hashedPassword = "hashedPassword",
                         provider = AuthProvider.EMAIL_PASSWORD,
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
@@ -65,20 +69,22 @@ class SessionDaoTest : KoinTest {
             val sessions =
                 listOf(
                     Session(
-                        userId = user1.getOrNull(),
+                        sessionID = UUID.randomUUID(),
+                        userId = user1.getDataOrNull()?.id,
                         refreshToken = "token1",
                         expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                     Session(
-                        userId = user2.getOrNull(),
+                        sessionID = UUID.randomUUID(),
+                        userId = user2.getDataOrNull()?.id,
                         refreshToken = "token2",
                         expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                 )
             sessionDao.addSessions(sessions)
             val result = sessionDao.getAllSessions()
-            assertTrue(result.isSuccess)
-            assertEquals(sessions.size, result.getOrNull()?.size)
+            assertTrue(result.isSuccess())
+            assertEquals(sessions.size, result.getDataOrNull()?.size)
         }
 
     @Test
@@ -97,22 +103,23 @@ class SessionDaoTest : KoinTest {
 
             var session =
                 Session(
-                    userId = user1.getOrNull(),
+                    sessionID = UUID.randomUUID(),
+                    userId = user1.getDataOrNull()?.id,
                     refreshToken = "token1",
                     expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
-            session = session.copy(sessionID = sessionDao.addSession(session).getOrNull())
+            session = sessionDao.addSession(session).getDataOrNull()!!
             val result = sessionDao.getSessionById(session.sessionID!!)
-            assertTrue(result.isSuccess)
-            assertEquals(session.sessionID, result.getOrNull()?.id?.value)
+            assertTrue(result.isSuccess())
+            assertEquals(session.sessionID, result.getDataOrNull()?.sessionID)
         }
 
     @Test
     fun getSessionById_returnsNullForNonExistentSession() =
         runBlocking {
             val result = sessionDao.getSessionById(UUID.randomUUID())
-            assertTrue(result.isSuccess)
-            assertNull(result.getOrNull())
+            assertTrue(result.isFailure())
+            assertNull(result.getDataOrNull())
         }
 
     @Test
@@ -131,14 +138,15 @@ class SessionDaoTest : KoinTest {
 
             val session =
                 Session(
-                    userId = user1.getOrNull(),
+                    sessionID = UUID.randomUUID(),
+                    userId = user1.getDataOrNull()?.id,
                     refreshToken = "token1",
                     expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
             val result = sessionDao.addSession(session)
-            assertTrue(result.isSuccess)
-            val retrievedSession = sessionDao.getSessionById(result.getOrNull()!!)
-            assertTrue(retrievedSession.getOrNull() != null)
+            assertTrue(result.isSuccess())
+            val retrievedSession = sessionDao.getSessionById(result.getDataOrNull()!!.sessionID!!)
+            assertTrue(retrievedSession.getDataOrNull() != null)
         }
 
     @Test
@@ -168,20 +176,22 @@ class SessionDaoTest : KoinTest {
             val sessions =
                 listOf(
                     Session(
-                        userId = user1.getOrNull(),
+                        sessionID = UUID.randomUUID(),
+                        userId = user1.getDataOrNull()?.id,
                         refreshToken = "token1",
                         expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                     Session(
-                        userId = user2.getOrNull(),
+                        sessionID = UUID.randomUUID(),
+                        userId = user2.getDataOrNull()?.id,
                         refreshToken = "token1",
                         expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                 )
             val result = sessionDao.addSessions(sessions)
-            assertTrue(result.isSuccess)
+            assertTrue(result.isSuccess())
             val retrievedSessions = sessionDao.getAllSessions()
-            assertEquals(sessions.size, retrievedSessions.getOrNull()?.size)
+            assertEquals(sessions.size, retrievedSessions.getDataOrNull()?.size)
         }
 
     @Test
@@ -200,14 +210,15 @@ class SessionDaoTest : KoinTest {
 
             var session =
                 Session(
-                    userId = user1.getOrNull(),
+                    sessionID = UUID.randomUUID(),
+                    userId = user1.getDataOrNull()?.id,
                     refreshToken = "token1",
                     expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
-            val sessionID = sessionDao.addSession(session).getOrNull()
+            val sessionID = sessionDao.addSession(session).getDataOrNull()
             session = session.copy(refreshToken = "newToken")
             val result = sessionDao.updateSession(session)
-            assertTrue(result.isSuccess)
+            assertTrue(result.isSuccess())
         }
 
     @Test
@@ -225,15 +236,16 @@ class SessionDaoTest : KoinTest {
                 )
             var session =
                 Session(
-                    userId = user1.getOrNull(),
+                    sessionID = UUID.randomUUID(),
+                    userId = user1.getDataOrNull()?.id,
                     refreshToken = "token1",
                     expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
-            session = session.copy(sessionID = sessionDao.addSession(session).getOrNull())
+            session = sessionDao.addSession(session).getDataOrNull()!!
             val result = sessionDao.deleteSession(session.sessionID!!)
-            assertTrue(result.isSuccess)
+            assertTrue(result.isSuccess())
             val retrievedSession = sessionDao.getSessionById(session.sessionID!!)
-            assertNull(retrievedSession.getOrNull())
+            assertNull(retrievedSession.getDataOrNull())
         }
 
     @Test
@@ -263,20 +275,22 @@ class SessionDaoTest : KoinTest {
             val sessions =
                 listOf(
                     Session(
-                        userId = user1.getOrNull(),
+                        sessionID = UUID.randomUUID(),
+                        userId = user1.getDataOrNull()?.id,
                         refreshToken = "token1",
                         expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                     Session(
-                        userId = user1.getOrNull(),
+                        sessionID = UUID.randomUUID(),
+                        userId = user1.getDataOrNull()?.id,
                         refreshToken = "token1",
                         expiresAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                 )
             sessionDao.addSessions(sessions)
             val result = sessionDao.deleteAllSessions()
-            assertTrue(result.isSuccess)
+            assertTrue(result.isSuccess())
             val retrievedSessions = sessionDao.getAllSessions()
-            assertTrue(retrievedSessions.getOrNull()?.isEmpty() ?: false)
+            assertTrue(retrievedSessions.getDataOrNull()?.isEmpty() ?: false)
         }
 }

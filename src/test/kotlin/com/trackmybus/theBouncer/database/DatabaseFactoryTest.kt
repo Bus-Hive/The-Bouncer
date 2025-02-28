@@ -34,6 +34,8 @@ class DatabaseFactoryTest : KoinTest {
                     put("postgres.driverClass", "org.h2.Driver")
                     put("postgres.jdbcURL", "jdbc:h2:mem:;DATABASE_TO_UPPER=false;MODE=MYSQL")
                     put("postgres.database", "")
+                    put("postgres.host", "localhost")
+                    put("postgres.port", "5432")
                     put("postgres.user", "")
                     put("postgres.password", "")
                     put("postgres.maxPoolSize", "1")
@@ -43,6 +45,19 @@ class DatabaseFactoryTest : KoinTest {
                     put("redis.port", "6379")
                     put("redis.password", "password")
                     put("redis.database", "0")
+
+                    put("password.saltLength", "16")
+                    put("password.iterations", "10000")
+                    put("password.hashLength", "64")
+                    put("password.memoryKb", "12345")
+                    put("password.parallelism", "1")
+
+                    put("jwt.secret", "secret")
+                    put("jwt.issuer", "issuer")
+                    put("jwt.audience", "audience")
+                    put("jwt.realm", "3600")
+                    put("jwt.accessTokenValiditySeconds", "3600")
+                    put("jwt.refreshTokenValiditySeconds", "3600")
                 }
                 setupConfig()
                 appConfig = get()
@@ -72,7 +87,7 @@ class DatabaseFactoryTest : KoinTest {
     fun dbQuery_executesSuspendedTransaction() =
         runBlocking {
             val result = databaseFactory.dbQuery { "test" }
-            assert(result == "test")
+            assert(result.getDataOrNull() == "test")
         }
 
     @Test

@@ -18,7 +18,7 @@ class ApiResponseTest {
         val errorCode = 404
         val message = "Not Found"
         val response = ApiResponse.Error(errorCode, message)
-        assertEquals(errorCode, response.errorCode)
+        assertEquals(errorCode, response.code)
         assertEquals(message, response.message)
     }
 

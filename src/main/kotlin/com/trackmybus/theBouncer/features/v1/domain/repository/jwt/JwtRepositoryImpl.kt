@@ -49,7 +49,6 @@ class JwtRepositoryImpl(
                     .getPermissionsByUserId(userId)
                     .onFailure {
                         logger.error("Error fetching permissions for user with ID: $userId")
-                        return Result.Error(it)
                     }.getDataOrNull()
                     .orEmpty()
 

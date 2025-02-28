@@ -24,7 +24,7 @@ class ApiResponseHandlerTest {
             }
             client.get("/success").apply {
                 assertEquals(HttpStatusCode.OK, status)
-                assertEquals("""{"data":"Test Data"}""", bodyAsText())
+                assertEquals("""{"data":"Test Data","code":200}""", bodyAsText())
             }
         }
 
@@ -40,7 +40,7 @@ class ApiResponseHandlerTest {
             }
             client.get("/error").apply {
                 assertEquals(HttpStatusCode.NotFound, status)
-                assertEquals("""{"errorCode":404,"message":"Not Found"}""", bodyAsText())
+                assertEquals("""{"code":404,"message":"Not Found"}""", bodyAsText())
             }
         }
 
@@ -62,7 +62,7 @@ class ApiResponseHandlerTest {
             client.get("/errorWithDetails").apply {
                 assertEquals(HttpStatusCode.InternalServerError, status)
                 assertEquals(
-                    """{"errorCode":500,"message":"Internal Server Error","details":"Stack trace details"}""",
+                    """{"code":500,"message":"Internal Server Error","details":"Stack trace details"}""",
                     bodyAsText(),
                 )
             }
@@ -80,7 +80,7 @@ class ApiResponseHandlerTest {
             }
             client.get("/errorWithNullDetails").apply {
                 assertEquals(HttpStatusCode.BadRequest, status)
-                assertEquals("""{"errorCode":400,"message":"Bad Request"}""", bodyAsText())
+                assertEquals("""{"code":400,"message":"Bad Request"}""", bodyAsText())
             }
         }
 }

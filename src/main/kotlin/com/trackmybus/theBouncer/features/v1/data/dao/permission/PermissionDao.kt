@@ -11,8 +11,6 @@ interface PermissionDao {
 
     suspend fun addPermission(permission: Permission): Result<Permission, RootError>
 
-    suspend fun addPermissions(permissions: List<Permission>): Result<Unit, RootError>
-
     suspend fun updatePermission(permission: Permission): Result<Permission, RootError>
 
     suspend fun deletePermission(id: Int): Result<Unit, RootError>

@@ -1,11 +1,16 @@
 package com.trackmybus.theBouncer.features.v1.data.dao
 
+import com.trackmybus.theBouncer.core.result.ResultHandler.isFailure
+import com.trackmybus.theBouncer.core.result.ResultHandler.isSuccess
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.di.configureKoinUnitTest
 import com.trackmybus.theBouncer.features.v1.data.dao.permission.PermissionDao
 import com.trackmybus.theBouncer.features.v1.data.model.Permission
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone.Companion.UTC
+import kotlinx.datetime.toLocalDateTime
 import org.junit.After
 import org.junit.Before
 import org.koin.core.context.stopKoin
@@ -34,96 +39,93 @@ class PermissionDaoTest : KoinTest {
     }
 
     @Test
-    fun getAllPermissions_returnsAllPermissions() =
-        runBlocking {
-            val permissions =
-                listOf(
-                    Permission(name = "READ", description = "Read permission"),
-                    Permission(name = "WRITE", description = "Write permission"),
-                )
-            permissionDao.addPermissions(permissions)
-            val result = permissionDao.getAllPermissions()
-            assertTrue(result.isSuccess)
-            assertEquals(permissions.size, result.getOrNull()?.size)
-        }
-
-    @Test
     fun getPermissionById_returnsPermission() =
         runBlocking {
-            var permission = Permission(name = "READ", description = "Read permission")
-            permission = permission.copy(id = permissionDao.addPermission(permission).getOrNull())
+            var permission =
+                Permission(
+                    name = "READ",
+                    description = "Read permission",
+                    permission = "read",
+                    createdAt = Clock.System.now().toLocalDateTime(UTC),
+                )
+            permission = permissionDao.addPermission(permission).getDataOrNull()!!
             val result = permissionDao.getPermissionById(permission.id!!)
-            assertTrue(result.isSuccess)
-            assertEquals(permission.id, result.getOrNull()?.id?.value)
+            assertTrue(result.isSuccess())
+            assertEquals(permission.id, result.getDataOrNull()?.id)
         }
 
     @Test
     fun getPermissionById_returnsNullForNonExistentPermission() =
         runBlocking {
             val result = permissionDao.getPermissionById(999)
-            assertTrue(result.isSuccess)
-            assertNull(result.getOrNull())
+            assertTrue(result.isFailure())
         }
 
     @Test
     fun addPermission_addsPermissionSuccessfully() =
         runBlocking {
-            val permission = Permission(name = "READ", description = "Read permission")
-            val result = permissionDao.addPermission(permission)
-            assertTrue(result.isSuccess)
-            val retrievedPermission = permissionDao.getPermissionById(result.getOrNull()!!)
-            assertEquals(result.getOrNull()!!, retrievedPermission.getOrNull()?.id?.value)
-        }
-
-    @Test
-    fun addPermissions_addsMultiplePermissionsSuccessfully() =
-        runBlocking {
-            val permissions =
-                listOf(
-                    Permission(name = "READ", description = "Read permission"),
-                    Permission(name = "WRITE", description = "Write permission"),
+            val permission =
+                Permission(
+                    name = "READ",
+                    description = "Read permission",
+                    permission = "read",
+                    createdAt = Clock.System.now().toLocalDateTime(UTC),
                 )
-            val result = permissionDao.addPermissions(permissions)
-            assertTrue(result.isSuccess)
-            val retrievedPermissions = permissionDao.getAllPermissions()
-            assertEquals(permissions.size, retrievedPermissions.getOrNull()?.size)
+            val result = permissionDao.addPermission(permission)
+            assertTrue(result.isSuccess())
+            val retrievedPermission = permissionDao.getPermissionById(result.getDataOrNull()!!.id!!)
+            assertEquals(result.getDataOrNull()!!.id, retrievedPermission.getDataOrNull()?.id)
         }
 
     @Test
     fun updatePermission_updatesPermissionSuccessfully() =
         runBlocking {
-            var permission = Permission(name = "READ", description = "Read permission")
-            permission = permission.copy(id = permissionDao.addPermission(permission).getOrNull())
+            var permission =
+                Permission(
+                    name = "READ",
+                    description = "Read permission",
+                    permission = "read",
+                    createdAt = Clock.System.now().toLocalDateTime(UTC),
+                )
+            permission = permissionDao.addPermission(permission).getDataOrNull()!!
             permission.description = "Updated read permission"
 //            val result = permissionDao.updatePermission(permission)
-//            assertTrue(result.isSuccess)
+//            assertTrue(result.isSuccess())
             val retrievedPermission = permissionDao.getPermissionById(permission.id!!)
-//            assertEquals("Updated read permission", retrievedPermission.getOrNull()?.description)
+//            assertEquals("Updated read permission", retrievedPermission.getDataOrNull()?.description)
         }
 
     @Test
     fun deletePermission_deletesPermissionSuccessfully() =
         runBlocking {
-            var permission = Permission(name = "READ", description = "Read permission")
-            permission = permission.copy(id = permissionDao.addPermission(permission).getOrNull())
+            var permission =
+                Permission(
+                    name = "READ",
+                    description = "Read permission",
+                    permission = "read",
+                    createdAt = Clock.System.now().toLocalDateTime(UTC),
+                )
+            permission = permissionDao.addPermission(permission).getDataOrNull()!!
             val result = permissionDao.deletePermission(permission.id!!)
-            assertTrue(result.isSuccess)
+            assertTrue(result.isSuccess())
             val retrievedPermission = permissionDao.getPermissionById(permission.id)
-            assertNull(retrievedPermission.getOrNull())
+            assertNull(retrievedPermission.getDataOrNull())
         }
 
     @Test
     fun deleteAllPermissions_deletesAllPermissionsSuccessfully() =
         runBlocking {
-            val permissions =
-                listOf(
-                    Permission(name = "READ", description = "Read permission"),
-                    Permission(name = "WRITE", description = "Write permission"),
-                )
-            permissionDao.addPermissions(permissions)
+            permissionDao.addPermission(
+                Permission(
+                    name = "READ",
+                    description = "Read permission",
+                    permission = "read",
+                    createdAt = Clock.System.now().toLocalDateTime(UTC),
+                ),
+            )
             val result = permissionDao.deleteAllPermissions()
-            assertTrue(result.isSuccess)
+            assertTrue(result.isSuccess())
             val retrievedPermissions = permissionDao.getAllPermissions()
-            assertTrue(retrievedPermissions.getOrNull()?.isEmpty() ?: false)
+            assertTrue(retrievedPermissions.getDataOrNull()?.isEmpty() == true)
         }
 }

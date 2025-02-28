@@ -70,11 +70,10 @@ fun Route.addPermission() {
 fun Route.removePermission() {
     val permissionUseCase: PermissionUseCase by application.inject()
     delete<Permissions> { resource ->
-        require(resource.permissionId != null) {
-            "Permission ID is required"
-        }
-
         runCatching {
+            require(resource.permissionId != null) {
+                "Permission ID is required"
+            }
             permissionUseCase.removePermission(resource.permissionId)
         }.onSuccess {
             call.respondResult(it)
@@ -92,11 +91,10 @@ fun Route.removePermission() {
 fun Route.updatePermission() {
     val permissionUseCase: PermissionUseCase by application.inject()
     put<Permissions, PermissionRequestDto> { resource, body ->
-        require(resource.permissionId != null) {
-            "Permission ID is required"
-        }
-
         runCatching {
+            require(resource.permissionId != null) {
+                "Permission ID is required"
+            }
             permissionUseCase.updatePermission(
                 permissionId = resource.permissionId,
                 name = body.name,
@@ -119,11 +117,10 @@ fun Route.updatePermission() {
 fun Route.getPermission() {
     val permissionUseCase: PermissionUseCase by application.inject()
     get<Permissions> { resource ->
-        require(resource.permissionId != null) {
-            "Permission ID is required"
-        }
-
         runCatching {
+            require(resource.permissionId != null) {
+                "Permission ID is required"
+            }
             permissionUseCase.getPermission(resource.permissionId)
         }.onSuccess {
             call.respondResult(it)
@@ -159,11 +156,10 @@ fun Route.getPermissions() {
 fun Route.getUserPermissions() {
     val permissionUseCase: PermissionUseCase by application.inject()
     get<Permissions.User> { resource ->
-        require(resource.userId != null) {
-            "User ID is required"
-        }
-
         runCatching {
+            require(resource.userId != null) {
+                "User ID is required"
+            }
             permissionUseCase.getPermissionsForUser(resource.userId)
         }.onSuccess {
             call.respondResult(it)

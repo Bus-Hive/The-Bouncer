@@ -12,8 +12,6 @@ interface PermissionRepository {
 
     suspend fun add(permission: Permission): Result<Permission, RootError>
 
-    suspend fun add(permissions: List<Permission>): Result<Unit, RootError>
-
     suspend fun update(permission: Permission): Result<Permission, RootError>
 
     suspend fun deleteById(id: Int): Result<Unit, RootError>

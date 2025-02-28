@@ -53,28 +53,6 @@ class PermissionDaoImpl(
                 logger.error("Error adding permission: ${permission.name}, ${permission.description}")
             }
 
-    override suspend fun addPermissions(permissions: List<Permission>): Result<Unit, RootError> =
-        dbFactory
-            .dbQuery {
-                permissions.forEach {
-                    require(it.id == null) {
-                        "Cannot create entity with non-null id"
-                    }
-
-                    PermissionEntity.new {
-                        this.name = it.name
-                        this.description = it.description
-                        permission = this.permission
-                        this.createdAt = it.createdAt
-                    }
-                }
-            }.addMessage(
-                success = "Successfully added permissions: ${permissions.joinToString { it.name }}",
-                failure = "Error adding permissions: $permissions",
-            ).onFailure {
-                logger.error("Error adding permissions: $permissions")
-            }
-
     override suspend fun updatePermission(permission: Permission): Result<Permission, RootError> =
         dbFactory
             .dbQuery {

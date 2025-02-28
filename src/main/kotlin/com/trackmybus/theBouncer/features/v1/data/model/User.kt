@@ -7,7 +7,7 @@ data class User(
     var id: UUID? = null,
     val email: String = "",
     val firstName: String = "",
-    val lastName: String = "",
+    var lastName: String = "",
     val hashedPassword: String = "",
     val provider: AuthProvider? = null,
     val createdAt: LocalDateTime? = null,

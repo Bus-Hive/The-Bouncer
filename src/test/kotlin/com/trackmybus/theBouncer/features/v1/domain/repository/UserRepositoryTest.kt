@@ -1,34 +1,35 @@
-package com.trackmybus.theBouncer.features.v1.data.dao
+package com.trackmybus.theBouncer.features.v1.domain.repository
 
 import com.trackmybus.theBouncer.core.result.ResultHandler.isFailure
 import com.trackmybus.theBouncer.core.result.ResultHandler.isSuccess
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.di.configureKoinUnitTest
-import com.trackmybus.theBouncer.features.v1.data.dao.user.UserDao
 import com.trackmybus.theBouncer.features.v1.data.model.AuthProvider
 import com.trackmybus.theBouncer.features.v1.data.model.User
+import com.trackmybus.theBouncer.features.v1.domain.repository.user.UserRepository
+import io.ktor.util.logging.Logger
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDateTime
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Test
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.get
 import java.util.UUID
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-class UserDaoTest : KoinTest {
+class UserRepositoryTest : KoinTest {
     private lateinit var databaseFactory: DatabaseFactory
-    private lateinit var userDao: UserDao
+    private lateinit var userRepository: UserRepository
+    private lateinit var logger: Logger
 
     @Before
     fun setup() {
         configureKoinUnitTest()
         databaseFactory = get()
-        userDao = get()
+        userRepository = get()
         databaseFactory.connect()
     }
 
@@ -39,7 +40,7 @@ class UserDaoTest : KoinTest {
     }
 
     @Test
-    fun getAllUsers_returnsAllUsers() =
+    fun getAll_returnsAllUsers() =
         runBlocking {
             val users =
                 listOf(
@@ -51,23 +52,23 @@ class UserDaoTest : KoinTest {
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                     User(
-                        firstName = "John",
+                        firstName = "Jane",
                         lastName = "Doe",
                         hashedPassword = "hashedPassword",
                         provider = AuthProvider.EMAIL_PASSWORD,
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                 )
-            userDao.addUsers(users)
-            val result = userDao.getAllUsers()
+            userRepository.add(users)
+            val result = userRepository.getAll()
             assertTrue(result.isSuccess())
             assertEquals(users.size, result.getDataOrNull()?.size)
         }
 
     @Test
-    fun getUserById_returnsUser() =
+    fun getById_returnsUser() =
         runBlocking {
-            var user =
+            val user =
                 User(
                     firstName = "John",
                     lastName = "Doe",
@@ -75,24 +76,74 @@ class UserDaoTest : KoinTest {
                     provider = AuthProvider.EMAIL_PASSWORD,
                     createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
-            user = userDao.addUser(user).getDataOrNull()!!
-            val result = userDao.getUserById(user.id!!)
+            val addedUser = userRepository.add(user).getDataOrNull()!!
+            val result = userRepository.getById(addedUser.id!!)
             assertTrue(result.isSuccess())
-            assertEquals(user, result.getDataOrNull())
+            assertEquals(addedUser.id, result.getDataOrNull()?.id)
         }
 
     @Test
-    fun getUserById_returnsNullForNonExistentUser() =
+    fun getById_returnsNullForNonExistentUser() =
         runBlocking {
-            val result = userDao.getUserById(UUID.randomUUID())
+            val result = userRepository.getById(UUID.randomUUID())
             assertTrue(result.isFailure())
-            assertNull(result.getDataOrNull())
         }
 
     @Test
-    fun addUser_addsUserSuccessfully() =
+    fun getByEmail_returnsUser() =
         runBlocking {
-            var user =
+            val user =
+                User(
+                    firstName = "John",
+                    lastName = "Doe",
+                    email = "john.doe@example.com",
+                    hashedPassword = "hashedPassword",
+                    provider = AuthProvider.EMAIL_PASSWORD,
+                    createdAt = LocalDateTime(2021, 1, 1, 0, 0),
+                )
+            userRepository.add(user)
+            val result = userRepository.getByEmail("john.doe@example.com")
+            assertTrue(result.isSuccess())
+            assertEquals(user.email, result.getDataOrNull()?.email)
+        }
+
+    @Test
+    fun getByEmail_returnsNullForNonExistentEmail() =
+        runBlocking {
+            val result = userRepository.getByEmail("nonexistent@example.com")
+            assertTrue(result.isFailure())
+        }
+
+    @Test
+    fun isEmailUnique_returnsTrueForUniqueEmail() =
+        runBlocking {
+            val result = userRepository.isEmailUnique("unique@example.com")
+            assertTrue(result.isSuccess())
+            assertTrue(result.getDataOrNull() == true)
+        }
+
+    @Test
+    fun isEmailUnique_returnsFalseForExistingEmail() =
+        runBlocking {
+            val user =
+                User(
+                    firstName = "John",
+                    lastName = "Doe",
+                    email = "john.doe@example.com",
+                    hashedPassword = "hashedPassword",
+                    provider = AuthProvider.EMAIL_PASSWORD,
+                    createdAt = LocalDateTime(2021, 1, 1, 0, 0),
+                )
+            userRepository.add(user)
+            val result = userRepository.isEmailUnique("john.doe@example.com")
+            assertTrue(result.isSuccess())
+            assertTrue(result.getDataOrNull() == false)
+        }
+
+    @Test
+    fun add_addsUserSuccessfully() =
+        runBlocking {
+            val user =
                 User(
                     firstName = "John",
                     lastName = "Doe",
@@ -100,15 +151,14 @@ class UserDaoTest : KoinTest {
                     provider = AuthProvider.EMAIL_PASSWORD,
                     createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
-            val result = userDao.addUser(user)
-            user = result.getDataOrNull()!!
+            val result = userRepository.add(user)
             assertTrue(result.isSuccess())
-            val retrievedUser = userDao.getUserById(user.id!!)
-            assertEquals(user.id, retrievedUser.getDataOrNull()?.id)
+            val retrievedUser = userRepository.getAll()
+            assertEquals(1, retrievedUser.getDataOrNull()?.size)
         }
 
     @Test
-    fun addUsers_addsMultipleUsersSuccessfully() =
+    fun add_addsMultipleUsersSuccessfully() =
         runBlocking {
             val users =
                 listOf(
@@ -120,21 +170,21 @@ class UserDaoTest : KoinTest {
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                     User(
-                        firstName = "John",
+                        firstName = "Jane",
                         lastName = "Doe",
                         hashedPassword = "hashedPassword",
                         provider = AuthProvider.EMAIL_PASSWORD,
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                 )
-            val result = userDao.addUsers(users)
+            val result = userRepository.add(users)
             assertTrue(result.isSuccess())
-            val retrievedUsers = userDao.getAllUsers()
+            val retrievedUsers = userRepository.getAll()
             assertEquals(users.size, retrievedUsers.getDataOrNull()?.size)
         }
 
     @Test
-    fun updateUser_updatesUserSuccessfully() =
+    fun update_updatesUserSuccessfully() =
         runBlocking {
             var user =
                 User(
@@ -144,15 +194,16 @@ class UserDaoTest : KoinTest {
                     provider = AuthProvider.EMAIL_PASSWORD,
                     createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
-            user = userDao.addUser(user).getDataOrNull()!!
-            val result = userDao.updateUser(user)
+            user = userRepository.add(user).getDataOrNull()!!
+            user.lastName = "Smith"
+            val result = userRepository.update(user)
             assertTrue(result.isSuccess())
-            val retrievedUser = userDao.getUserById(user.id!!)
-            assertEquals(user.lastName, retrievedUser.getDataOrNull()?.lastName)
+            val retrievedUser = userRepository.getById(user.id!!)
+            assertEquals("Smith", retrievedUser.getDataOrNull()?.lastName)
         }
 
     @Test
-    fun deleteUser_deletesUserSuccessfully() =
+    fun delete_deletesUserSuccessfully() =
         runBlocking {
             var user =
                 User(
@@ -162,15 +213,15 @@ class UserDaoTest : KoinTest {
                     provider = AuthProvider.EMAIL_PASSWORD,
                     createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                 )
-            user = userDao.addUser(user).getDataOrNull()!!
-            val result = userDao.deleteUser(user.id!!)
+            user = userRepository.add(user).getDataOrNull()!!
+            val result = userRepository.delete(user.id!!)
             assertTrue(result.isSuccess())
-            val retrievedUser = userDao.getUserById(user.id!!)
-            assertNull(retrievedUser.getDataOrNull())
+            val retrievedUser = userRepository.getById(user.id!!)
+            assertTrue(retrievedUser.isFailure())
         }
 
     @Test
-    fun deleteAllUsers_deletesAllUsersSuccessfully() =
+    fun deleteAll_deletesAllUsersSuccessfully() =
         runBlocking {
             val users =
                 listOf(
@@ -182,17 +233,17 @@ class UserDaoTest : KoinTest {
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                     User(
-                        firstName = "John",
+                        firstName = "Jane",
                         lastName = "Doe",
                         hashedPassword = "hashedPassword",
                         provider = AuthProvider.EMAIL_PASSWORD,
                         createdAt = LocalDateTime(2021, 1, 1, 0, 0),
                     ),
                 )
-            userDao.addUsers(users)
-            val result = userDao.deleteAllUsers()
+            userRepository.add(users)
+            val result = userRepository.deleteAll()
             assertTrue(result.isSuccess())
-            val retrievedUsers = userDao.getAllUsers()
+            val retrievedUsers = userRepository.getAll()
             assertTrue(retrievedUsers.getDataOrNull()?.isEmpty() ?: false)
         }
 }

@@ -34,14 +34,17 @@ class EmailPasswordUseCaseImpl(
         lastName: String,
     ): Result<Unit, RootError> {
         if (email.isBlank() || password.isBlank() || firstName.isBlank() || lastName.isBlank()) {
+            logger.error("Empty field")
             return Result.Error(error = ValidationError.EmptyField, message = "Empty field")
         }
 
-        if (!password.matches(Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=])(?=\\S+\$).{8,}\$"))) {
+        if (!password.matches(Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=!])(?=\\S+\$).{8,}\$"))) {
+            logger.error("Invalid password")
             return Result.Error(error = ValidationError.InvalidCredentials, message = "Invalid password")
         }
 
         if (!email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))) {
+            logger.error("Invalid email")
             return Result.Error(error = ValidationError.InvalidEmail, message = "Invalid email")
         }
 
@@ -108,7 +111,7 @@ class EmailPasswordUseCaseImpl(
             return Result.Error(error = ValidationError.EmptyField, message = "Empty field")
         }
 
-        if (!password.matches(Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=])(?=\\S+\$).{8,}\$"))) {
+        if (!password.matches(Regex("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=!])(?=\\S+\$).{8,}\$"))) {
             return Result.Error(error = ValidationError.InvalidCredentials, message = "Invalid password")
         }
 

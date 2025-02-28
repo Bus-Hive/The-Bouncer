@@ -1,5 +1,7 @@
 package com.trackmybus.theBouncer.database
 
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.errors.DataError
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.features.v1.data.ScheduleSchemaInitializer
 import com.zaxxer.hikari.HikariConfig
@@ -28,7 +30,14 @@ class DatabaseFactoryForUnitTest(
         connectionPool.close()
     }
 
-    override suspend fun <T> dbQuery(block: suspend () -> T): T = newSuspendedTransaction(Dispatchers.IO) { block() }
+    override suspend fun <T> dbQuery(block: suspend () -> T?): Result<T, DataError.Local> =
+        try {
+            newSuspendedTransaction(Dispatchers.IO) {
+                block()?.let { Result.Success(it) } ?: Result.Error(DataError.Local.RecordNotFound)
+            }
+        } catch (e: Exception) {
+            Result.Error(DataError.Local.Unknown)
+        }
 
     private fun createHikariDataSource() =
         HikariDataSource(
