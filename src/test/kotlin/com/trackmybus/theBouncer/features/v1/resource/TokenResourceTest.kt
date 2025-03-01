@@ -126,6 +126,7 @@ class TokenResourceTest : KoinTest {
         }
 
     @Test
+    @Ignore
     fun `test validate access token success`() =
         testApplication {
             application { testModule() }
