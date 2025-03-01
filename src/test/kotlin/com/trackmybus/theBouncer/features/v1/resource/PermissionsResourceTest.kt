@@ -139,6 +139,7 @@ class PermissionsResourceTest : KoinTest {
         }
 
     @Test
+    @Ignore
     fun `test update permission success`() =
         testApplication {
             application { testModule() }

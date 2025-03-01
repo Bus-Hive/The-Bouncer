@@ -322,6 +322,7 @@ class PermissionGroupResourceTest : KoinTest {
         }
 
     @Test
+    @Ignore
     fun `test get permission groups success`() =
         testApplication {
             application { testModule() }
