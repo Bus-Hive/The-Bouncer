@@ -59,10 +59,7 @@ class SessionDaoImpl(
                 success = "Session added successfully",
                 failure = "Failed to add session",
             ).onFailure {
-                logger.error(
-                    "Error adding session: ${session.sessionID}, ${session.userId}, ${session.refreshToken}, ${session.expiresAt}",
-                    it,
-                )
+                logger.error("Error adding session: ${session.sessionID}")
             }
 
     override suspend fun addSessions(sessions: List<Session>): Result<Unit, RootError> =
@@ -109,10 +106,7 @@ class SessionDaoImpl(
                 success = "Session updated successfully",
                 failure = "Failed to update session",
             ).onFailure {
-                logger.error(
-                    "Error updating session: ${session.sessionID}, ${session.userId}, ${session.refreshToken}, ${session.expiresAt}",
-                    it,
-                )
+                logger.error("Error updating session: ${session.sessionID}")
             }
 
     override suspend fun deleteSession(id: UUID): Result<Unit, RootError> =

@@ -69,7 +69,7 @@ class JwtRepositoryImpl(
                     .withAudience(appConfig.jwtConfig.audience)
                     .withIssuer(appConfig.jwtConfig.issuer)
                     .withClaims(claims)
-                    .withExpiresAt(Date(System.currentTimeMillis() + appConfig.jwtConfig.accessTokenValiditySeconds * 1000))
+                    .withExpiresAt(Date(System.currentTimeMillis() + appConfig.jwtConfig.accessTokenValiditySeconds.toLong() * 1000L))
                     .sign(Algorithm.HMAC256(appConfig.jwtConfig.secret))
 
             return Result.Success(data = token)
@@ -102,7 +102,7 @@ class JwtRepositoryImpl(
 
     override suspend fun generateRefreshToken(user: User): Result<String, RootError> {
         try {
-            val expiryTime = System.currentTimeMillis() + appConfig.jwtConfig.refreshTokenValiditySeconds * 1000
+            val expiryTime = System.currentTimeMillis() + appConfig.jwtConfig.refreshTokenValiditySeconds.toLong() * 1000L
             val id = UUID.randomUUID()
 
             val token =

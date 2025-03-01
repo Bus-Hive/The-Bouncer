@@ -19,7 +19,7 @@ class SessionRepositoryImpl(
             .getAllSessions()
             .also { result ->
                 result.onSuccess { logger.info("Successfully fetched all sessions") }
-                result.onFailure { logger.error("Error fetching all sessions", it) }
+                result.onFailure { logger.error("Error fetching all sessions") }
             }
     }
 
@@ -29,7 +29,7 @@ class SessionRepositoryImpl(
             .getSessionById(id)
             .also { result ->
                 result.onSuccess { logger.info("Successfully fetched session with id: $id") }
-                result.onFailure { logger.error("Error fetching session with id: $id", it) }
+                result.onFailure { logger.error("Error fetching session with id: $id") }
             }
     }
 
@@ -39,7 +39,7 @@ class SessionRepositoryImpl(
             .addSession(session)
             .also { result ->
                 result.onSuccess { logger.info("Successfully added session: ${result.getDataOrNull()}") }
-                result.onFailure { logger.error("Error adding session: ${result.getDataOrNull()}", it) }
+                result.onFailure { logger.error("Error adding session: ${result.getDataOrNull()}") }
             }
     }
 
@@ -63,7 +63,7 @@ class SessionRepositoryImpl(
             .updateSession(session)
             .also { result ->
                 result.onSuccess { logger.info("Successfully updated session: ${session.sessionID}") }
-                result.onFailure { logger.error("Error updating session: ${session.sessionID}", it) }
+                result.onFailure { logger.error("Error updating session: ${session.sessionID}") }
             }
 
     override suspend fun deleteById(id: UUID): Result<Unit, RootError> =
@@ -71,7 +71,7 @@ class SessionRepositoryImpl(
             .deleteSession(id)
             .also { result ->
                 result.onSuccess { logger.info("Successfully deleted session with id: $id") }
-                result.onFailure { logger.error("Error deleting session with id: $id", it) }
+                result.onFailure { logger.error("Error deleting session with id: $id") }
             }
 
     override suspend fun deleteAll(): Result<Unit, RootError> =
@@ -79,6 +79,6 @@ class SessionRepositoryImpl(
             .deleteAllSessions()
             .also { result ->
                 result.onSuccess { logger.info("Successfully deleted all sessions") }
-                result.onFailure { logger.error("Error deleting all sessions", it) }
+                result.onFailure { logger.error("Error deleting all sessions") }
             }
 }
