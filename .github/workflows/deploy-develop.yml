@@ -32,7 +32,7 @@ jobs:
             git pull origin develop
   
             # Get current active instance from Kong Admin API
-            ACTIVE_TARGET=$(curl -s http://10.0.0.93:8001/upstreams/the-bouncer/targets | jq -r '.data[] | select(.weight == 100) | .target' | awk -F: '{print $1 ":" $2}')
+            ACTIVE_TARGET=$(curl -s http://10.0.0.17:8001/upstreams/the-bouncer/targets | jq -r '.data[] | select(.weight == 100) | .target' | awk -F: '{print $1 ":" $2}')
             echo "Current active target: $ACTIVE_TARGET"
             if [ "$ACTIVE_TARGET" = "10.0.0.91:8091" ]; then
               NEW_VERSION="green"
@@ -77,8 +77,8 @@ jobs:
   
             # Gradually shift traffic to new version
             for i in $(seq 10 10 100); do
-              curl -X PATCH http://10.0.0.93:8001/upstreams/the-bouncer/targets/10.0.0.91:$NEW_PORT -d "weight=$i"
-              curl -X PATCH http://10.0.0.93:8001/upstreams/the-bouncer/targets/10.0.0.91:$OLD_PORT -d "weight=$((100-i))"
+              curl -X PATCH http://10.0.0.17:8001/upstreams/the-bouncer/targets/10.0.0.91:$NEW_PORT -d "weight=$i"
+              curl -X PATCH http://10.0.0.17:8001/upstreams/the-bouncer/targets/10.0.0.91:$OLD_PORT -d "weight=$((100-i))"
               echo "Traffic shifted: $i% to $NEW_VERSION"
               sleep 5
             done
