@@ -4,7 +4,6 @@ import com.trackmybus.theBouncer.core.result.ResultHandler.isFailure
 import com.trackmybus.theBouncer.core.result.ResultHandler.isSuccess
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.di.configureKoinUnitTest
-import com.trackmybus.theBouncer.features.v1.domain.usecase.emailPassword.EmailPasswordUseCase
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before

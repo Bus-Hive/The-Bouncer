@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package com.trackmybus.theBouncer.features.v1.resource
 
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
