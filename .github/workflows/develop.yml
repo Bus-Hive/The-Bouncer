@@ -224,7 +224,6 @@ jobs:
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -247,7 +246,6 @@ jobs:
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment: DEV
     needs: [ build ]
@@ -335,7 +333,6 @@ jobs:
 
 
   deploy-doc:
-    if: ${{ github.event_name == 'push' }}
     name: Deploy API documentation on Bump.sh
     needs: [ deploy ]
     runs-on: ubuntu-latest
