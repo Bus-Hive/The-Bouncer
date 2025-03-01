@@ -6,7 +6,8 @@ services:
   the-bouncer-green:
     image: ghcr.io/track-my-bus-ireland/the-bouncer:latest
     container_name: the-bouncer-green
-    network_mode: host
+    networks:
+      - track_my_bus_network
     environment:
       # SERVER CONFIG
       PORT: 8090
@@ -37,7 +38,8 @@ services:
   the-bouncer-blue:
     image: ghcr.io/track-my-bus-ireland/the-bouncer:latest
     container_name: the-bouncer-blue
-    network_mode: host
+    networks:
+      - track_my_bus_network
     environment:
       # SERVER CONFIG
       PORT: 8091
@@ -64,3 +66,7 @@ services:
       JWT_AUDIENCE: ${JWT_AUDIENCE}
     ports:
       - "8091:8091"
+
+networks:
+  track_my_bus_network:
+    external: true
