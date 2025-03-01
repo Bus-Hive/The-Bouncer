@@ -27,7 +27,7 @@ import org.koin.test.get
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class EmailAndPasswordRoutesTest : KoinTest {
+class EmailAndPasswordResourceTest : KoinTest {
     private lateinit var databaseFactory: DatabaseFactory
 
     @Before

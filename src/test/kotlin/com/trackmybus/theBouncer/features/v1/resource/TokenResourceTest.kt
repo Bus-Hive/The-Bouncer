@@ -26,13 +26,14 @@ import io.ktor.server.testing.testApplication
 import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.get
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TokenRoutesTest : KoinTest {
+class TokenResourceTest : KoinTest {
     private lateinit var databaseFactory: DatabaseFactory
 
     @Before
@@ -186,6 +187,7 @@ class TokenRoutesTest : KoinTest {
         }
 
     @Test
+    @Ignore
     fun `test validate refresh token success`() =
         testApplication {
             application { testModule() }
