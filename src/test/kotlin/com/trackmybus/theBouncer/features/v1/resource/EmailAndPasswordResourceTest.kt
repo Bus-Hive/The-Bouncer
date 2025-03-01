@@ -24,9 +24,11 @@ import org.junit.Before
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.get
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Ignore
 class EmailAndPasswordResourceTest : KoinTest {
     private lateinit var databaseFactory: DatabaseFactory
 

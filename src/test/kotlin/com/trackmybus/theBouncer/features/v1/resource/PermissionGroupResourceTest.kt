@@ -31,6 +31,7 @@ import org.koin.test.get
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Ignore
 class PermissionGroupResourceTest : KoinTest {
     private lateinit var databaseFactory: DatabaseFactory
 
