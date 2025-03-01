@@ -1,0 +1,350 @@
+name: 'develop'
+on:
+  push:
+    branches: [ "develop" ]
+permissions:
+  contents: read
+  actions: read
+  checks: write
+  pull-requests: write
+  security-events: write
+  packages: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Ktlint
+        uses: ScaCap/action-ktlint@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          baseline: ${{ github.workspace }}/config/ktlint/baseline.xml
+
+  security_checks:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: java-kotlin
+            build-mode: autobuild
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '17'
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          queries: security-extended,security-and-quality
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+
+  dependency_updates:
+    name: Dependency Updates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Check for Dependency Updates
+        run: ./gradlew dependencyUpdates
+
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    needs: [ security_checks, dependency_updates, lint ]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Grant Execute Permissions for Gradle
+        run: chmod +x gradlew
+
+      - name: Run Tests
+        run: ./gradlew test
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: test-results
+          path: build/test-results/
+
+  upload_test_report:
+    name: Upload Test Report
+    runs-on: ubuntu-latest
+    needs: build_and_test
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Test Results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v1
+        with:
+          artifact: test-results
+          name: Test Report
+          path: 'test/*.xml'
+          reporter: java-junit
+
+#  generate_coverage_report:
+#    name: Generate Coverage Report
+#    runs-on: ubuntu-latest
+#    needs: [ security_checks, build_and_test ]
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '17'
+#
+#      - name: Generate Coverage Report
+#        run: ./gradlew koverXmlReport
+#
+#      - name: Upload Coverage Report as Artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: coverage-report
+#          path: build/reports/kover/report.xml
+#
+#      - name: Upload Coverage Report
+#        id: kover
+#        uses: mi-kas/kover-report@v1
+#        with:
+#          path: |
+#            ${{ github.workspace }}/build/reports/kover/report.xml
+#          title: Code Coverage
+#          update-comment: true
+#          min-coverage-overall: 70
+#          min-coverage-changed-files: 70
+#          coverage-counter-type: LINE
+
+  build:
+    name: Build & Publish Docker Image
+    runs-on: ubuntu-latest
+    needs: [ build_and_test, upload_test_report ]
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Install the cosign tool except on PR
+      # https://github.com/sigstore/cosign-installer
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
+        with:
+          cosign-release: 'v2.2.4'
+
+      # Set up BuildKit Docker container builder to be able to build
+      # multi-platform images and export cache
+      # https://github.com/docker/setup-buildx-action
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Sign the resulting Docker image digest except on PRs.
+      # This will only write to the public Rekor transparency log when the Docker
+      # repository is public to avoid leaking data.  If you would like to publish
+      # transparency data even for private images, pass --force to cosign below.
+      # https://github.com/sigstore/cosign
+      - name: Sign the published Docker image
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        # This step uses the identity token to provision an ephemeral certificate
+        # against the sigstore community Fulcio instance.
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: DEV
+    needs: [ build ]
+    name: Deploy to DEV Server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Blue-Green with Kong
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            set -e
+            cd ${{ vars.APP_DIR }}
+            git pull origin develop
+
+            # Get current active instance from Kong Admin API
+            ACTIVE_TARGET=$(curl -s ${{ vars.KONG_ADMIN_URL }} | jq -r '.data[] | select(.weight == 100) | .target' | awk -F: '{print $1 ":" $2}')
+            echo "Current active target: $ACTIVE_TARGET"
+
+            if [ "$ACTIVE_TARGET" = "the-bouncer-blue:${{ vars.BLUE_PORT }}" ]; then
+              NEW_VERSION="green"
+              NEW_PORT=${{ vars.GREEN_PORT }}
+              OLD_VERSION="blue"
+              OLD_PORT=${{ vars.BLUE_PORT }}
+            else
+              NEW_VERSION="blue"
+              NEW_PORT=${{ vars.BLUE_PORT }}
+              OLD_VERSION="green"
+              OLD_PORT=${{ vars.GREEN_PORT }}
+            fi
+
+            echo "Deploying new version to $NEW_VERSION..."
+            sudo docker compose -f ${{ vars.DOCKER_COMPOSE_FILE }} up -d the-bouncer-$NEW_VERSION --remove-orphans
+
+            # Health check with retry logic
+            max_retries=10
+            retry_count=0
+            echo "Waiting for $NEW_VERSION to be healthy..."
+            while [ $retry_count -lt $max_retries ]; do
+                if curl http://localhost:$NEW_PORT/health >/dev/null; then
+                echo "Service is healthy!"
+                break
+              else
+                retry_count=$((retry_count+1))
+                echo "Health check failed (attempt $retry_count/$max_retries)"
+                sleep 5
+              fi
+            done
+
+            if [ $retry_count -eq $max_retries ]; then
+              echo "Health check failed after $max_retries attempts. Rolling back..."
+              sudo docker compose -f ${{ vars.DOCKER_COMPOSE_FILE }} stop the-bouncer-$NEW_VERSION
+              sudo docker compose -f ${{ vars.DOCKER_COMPOSE_FILE }} rm -f the-bouncer-$NEW_VERSION
+              sudo docker system prune -af
+              echo "Removed failed $NEW_VERSION container"
+              exit 1
+            fi
+
+            echo "New version is healthy. Gradually shifting traffic..."
+
+            # Gradually shift traffic to new version
+            for i in $(seq 10 10 100); do
+              curl -X PATCH ${{ vars.KONG_ADMIN_URL }}/the-bouncer-$NEW_VERSION:$NEW_PORT -d "weight=$i"
+              curl -X PATCH ${{ vars.KONG_ADMIN_URL }}/the-bouncer-$OLD_VERSION:$OLD_PORT -d "weight=$((100-i))"
+              echo "Traffic shifted: $i% to $NEW_VERSION"
+              sleep 5
+            done
+
+            echo "100% traffic now on $NEW_VERSION. Removing old version..."
+            sudo docker compose -f ${{ vars.DOCKER_COMPOSE_FILE }} stop the-bouncer-$OLD_VERSION
+            sudo docker compose -f ${{ vars.DOCKER_COMPOSE_FILE }} rm -f the-bouncer-$OLD_VERSION
+
+            sudo docker system prune -af
+
+            echo "Deployment complete!"
+          EOF
+
+
+  deploy-doc:
+    if: ${{ github.event_name == 'push' }}
+    name: Deploy API documentation on Bump.sh
+    needs: [ deploy ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Deploy API documentation
+        uses: bump-sh/github-action@v1
+        with:
+          doc: 70fd74f4-949c-4aba-b1fe-05574d83e8ba
+          token: ${{ secrets.BUMP_TOKEN }}
+          file: ./src/main/resources/openapi/documentation.yaml

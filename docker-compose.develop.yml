@@ -1,0 +1,72 @@
+version: "3.8"
+
+name: The-Bouncer
+
+services:
+  the-bouncer-green:
+    image: ghcr.io/track-my-bus-ireland/the-bouncer:latest
+    container_name: the-bouncer-green
+    networks:
+      - track_my_bus_network
+    environment:
+      # SERVER CONFIG
+      PORT: 8090
+
+      # DATABASE CONFIG
+      JDBC_URL: ${JDBC_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAX_DB_POOL_SIZE: ${MAX_DB_POOL_SIZE}
+      DB_AUTO_COMMIT: ${DB_AUTO_COMMIT}
+
+      # REDIS CONFIG
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: ${REDIS_DB}
+
+      # JWT CONFIG
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: ${JWT_ISSUER}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+    ports:
+      - "8090:8090"
+
+  the-bouncer-blue:
+    image: ghcr.io/track-my-bus-ireland/the-bouncer:latest
+    container_name: the-bouncer-blue
+    networks:
+      - track_my_bus_network
+    environment:
+      # SERVER CONFIG
+      PORT: 8091
+
+      # DATABASE CONFIG
+      JDBC_URL: ${JDBC_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAX_DB_POOL_SIZE: ${MAX_DB_POOL_SIZE}
+      DB_AUTO_COMMIT: ${DB_AUTO_COMMIT}
+
+      # REDIS CONFIG
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: ${REDIS_DB}
+
+      # JWT CONFIG
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: ${JWT_ISSUER}
+      JWT_AUDIENCE: ${JWT_AUDIENCE}
+    ports:
+      - "8091:8091"
+
+networks:
+  track_my_bus_network:
+    external: true

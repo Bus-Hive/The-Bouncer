@@ -1,0 +1,26 @@
+package com.trackmybus.theBouncer.features.v1.domain.repository.user
+
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.RootError
+import com.trackmybus.theBouncer.features.v1.data.model.User
+import java.util.UUID
+
+interface UserRepository {
+    suspend fun getAll(): Result<List<User>, RootError>
+
+    suspend fun getById(id: UUID): Result<User, RootError>
+
+    suspend fun getByEmail(email: String): Result<User, RootError>
+
+    suspend fun isEmailUnique(email: String): Result<Boolean, RootError>
+
+    suspend fun add(user: User): Result<User, RootError>
+
+    suspend fun add(users: List<User>): Result<Unit, RootError>
+
+    suspend fun update(user: User): Result<User, RootError>
+
+    suspend fun delete(id: UUID): Result<Unit, RootError>
+
+    suspend fun deleteAll(): Result<Unit, RootError>
+}

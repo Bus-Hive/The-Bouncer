@@ -1,6 +1,9 @@
 package com.trackmybus.theBouncer.database.postgres
 
 import com.trackmybus.theBouncer.config.AppConfig
+import com.trackmybus.theBouncer.core.result.Result
+import com.trackmybus.theBouncer.core.result.ResultHandler.toLocalError
+import com.trackmybus.theBouncer.core.result.errors.DataError
 import com.trackmybus.theBouncer.features.v1.data.ScheduleSchemaInitializer
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -13,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class DatabaseFactoryImpl(
     private val logger: Logger,
     appConfig: AppConfig,
-    private val scheduleSchemaInitializer:  ScheduleSchemaInitializer,
+    private val scheduleSchemaInitializer: ScheduleSchemaInitializer,
 ) : DatabaseFactory {
     private val postgresConfig = appConfig.postgresConfig
     override lateinit var database: Database
@@ -29,6 +32,8 @@ class DatabaseFactoryImpl(
                         ) {
                             databaseUrlBuilder(
                                 jdbcUrl = postgresConfig.jdbcUrl,
+                                host = postgresConfig.host,
+                                port = postgresConfig.port,
                                 defaultDatabase = postgresConfig.database,
                                 user = postgresConfig.user,
                                 password = postgresConfig.password,
@@ -73,10 +78,25 @@ class DatabaseFactoryImpl(
 
     private fun databaseUrlBuilder(
         jdbcUrl: String,
+        host: String,
+        port: Int,
         defaultDatabase: String,
         user: String,
         password: String,
-    ) = "$jdbcUrl/$defaultDatabase?user=$user&password=$password"
+    ) = "$jdbcUrl$host:$port/$defaultDatabase?user=$user&password=$password"
 
-    override suspend fun <T> dbQuery(block: suspend () -> T): T = newSuspendedTransaction(Dispatchers.IO) { block() }
+    override suspend fun <T> dbQuery(block: suspend () -> T?): Result<T, DataError.Local> =
+        try {
+            newSuspendedTransaction(Dispatchers.IO) {
+                val result = block()
+                if (result != null) {
+                    Result.Success(result)
+                } else {
+                    Result.Error(DataError.Local.RecordNotFound)
+                }
+            }
+        } catch (e: Exception) {
+            logger.error("Error executing database query", e)
+            Result.Error(e.toLocalError())
+        }
 }

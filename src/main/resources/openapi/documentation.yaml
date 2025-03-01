@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
-  title: "The Keg"
-  description: "Application to fetch and display public transport schedules"
+  title: "The Bouncer"
+  description: "Authentication and authorization service with JWT, RBAC with permission&permission group access management"
   version: "1.0.0"
 servers:
   - url: "http://0.0.0.0:8003/the-bouncer/v1"
@@ -21,6 +21,403 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /emailAndPassword/login:
+    post:
+      summary: Login with email and password
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDto'
+      responses:
+        '200':
+          description: Login successful
+        '500':
+          description: Failed to login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /emailAndPassword/register:
+    post:
+      summary: Register a new user
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestDto'
+      responses:
+        '200':
+          description: Registration successful
+        '500':
+          description: Failed to register
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permission-group:
+    post:
+      summary: Add a new permission group
+      tags:
+        - permission-group
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupRequestDto'
+      responses:
+        '200':
+          description: Permission group added successfully
+        '500':
+          description: Failed to add permission group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove a permission group
+      tags:
+        - permission-group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permission group removed successfully
+        '500':
+          description: Failed to remove permission group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update a permission group
+      tags:
+        - permission-group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionGroupRequestDto'
+      responses:
+        '200':
+          description: Permission group updated successfully
+        '500':
+          description: Failed to update permission group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permission-group/all:
+    get:
+      summary: Get all permission groups
+      tags:
+        - permission-group
+      responses:
+        '200':
+          description: Permission groups fetched successfully
+        '500':
+          description: Failed to fetch permission groups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permission-group/base:
+    get:
+      summary: Get base permission groups
+      tags:
+        - permission-group
+      responses:
+        '200':
+          description: Base permission groups fetched successfully
+        '500':
+          description: Failed to fetch base permission groups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permission-group/user/{userId}:
+    get:
+      summary: Get permission groups by user ID
+      tags:
+        - permission-group
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Permission groups fetched successfully
+        '500':
+          description: Failed to fetch permission groups by user ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permission-group/permission:
+    post:
+      summary: Assign permission to group
+      tags:
+        - permission-group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: permissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permission assigned to group successfully
+        '500':
+          description: Failed to assign permission to group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove permission from group
+      tags:
+        - permission-group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: permissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permission removed from group successfully
+        '500':
+          description: Failed to remove permission from group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permissions:
+    post:
+      summary: Add a new permission
+      tags:
+        - permissions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionRequestDto'
+      responses:
+        '200':
+          description: Permission added successfully
+        '500':
+          description: Failed to add permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove a permission
+      tags:
+        - permissions
+      parameters:
+        - name: permissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permission removed successfully
+        '500':
+          description: Failed to remove permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update a permission
+      tags:
+        - permissions
+      parameters:
+        - name: permissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionRequestDto'
+      responses:
+        '200':
+          description: Permission updated successfully
+        '500':
+          description: Failed to update permission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permissions/all:
+    get:
+      summary: Get all permissions
+      tags:
+        - permissions
+      responses:
+        '200':
+          description: Permissions fetched successfully
+        '500':
+          description: Failed to fetch permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /permissions/user/{userId}:
+    get:
+      summary: Get permissions by user ID
+      tags:
+        - permissions
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Permissions fetched successfully
+        '500':
+          description: Failed to fetch permissions by user ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /token/refresh:
+    post:
+      summary: Refresh access token
+      tags:
+        - token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+      responses:
+        '200':
+          description: Token refreshed successfully
+        '500':
+          description: Failed to refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /token/validate/access:
+    post:
+      summary: Validate access token
+      tags:
+        - token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTokenDto'
+      responses:
+        '200':
+          description: Access token validated successfully
+        '500':
+          description: Failed to validate access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /token/validate/refresh:
+    post:
+      summary: Validate refresh token
+      tags:
+        - token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+      responses:
+        '200':
+          description: Refresh token validated successfully
+        '500':
+          description: Failed to validate refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /token/revoke:
+    post:
+      summary: Revoke session
+      tags:
+        - token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+      responses:
+        '200':
+          description: Session revoked successfully
+        '500':
+          description: Failed to revoke session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -32,4 +429,56 @@ components:
         message:
           type: string
         details:
+          type: string
+
+    LoginRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    RegisterRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+
+    PermissionGroupRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        isBaseUserGroup:
+          type: boolean
+
+    PermissionRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        permission:
+          type: string
+
+    AccessTokenDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+
+    RefreshTokenDto:
+      type: object
+      properties:
+        refreshToken:
           type: string

@@ -1,6 +1,5 @@
 package com.trackmybus.theBouncer.config
 
-import com.trackmybus.theBouncer.config.AppConfig
 import com.ucasoft.ktor.simpleCache.SimpleCache
 import com.ucasoft.ktor.simpleRedisCache.redisCache
 import io.ktor.server.application.Application

@@ -1,10 +1,11 @@
+@file:Suppress("ktlint:standard:filename")
+
 package com.trackmybus.theBouncer.di
 
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import kotlin.jvm.java
 
 val loggerModule =
     module {
