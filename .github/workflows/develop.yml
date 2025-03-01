@@ -334,3 +334,19 @@ jobs:
 
             echo "Deployment complete!"
           EOF
+
+
+  deploy-doc:
+    if: ${{ github.event_name == 'push' }}
+    name: Deploy API documentation on Bump.sh
+    needs: [ deploy ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Deploy API documentation
+        uses: bump-sh/github-action@v1
+        with:
+          doc: 70fd74f4-949c-4aba-b1fe-05574d83e8ba
+          token: ${{ secrets.BUMP_TOKEN }}
+          file: ./src/main/resources/openapi/documentation.yaml
