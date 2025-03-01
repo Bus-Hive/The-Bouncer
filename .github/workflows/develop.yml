@@ -272,7 +272,7 @@ jobs:
             # Get current active instance from Kong Admin API
             ACTIVE_TARGET=$(curl -s ${{ vars.KONG_ADMIN_URL }} | jq -r '.data[] | select(.weight == 100) | .target' | awk -F: '{print $1}')
 
-            if [ "$ACTIVE_TARGET" = "the-bouncer-blue:${{ vars.BLUE_PORT }}" ]; then
+            if [ "$ACTIVE_TARGET" = "the-bouncer-blue" ]; then
               NEW_VERSION="green"
               NEW_PORT=${{ vars.GREEN_PORT }}
               OLD_VERSION="blue"
