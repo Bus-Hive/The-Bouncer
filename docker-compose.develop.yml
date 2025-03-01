@@ -4,7 +4,7 @@ name: The-Bouncer
 
 services:
   the-bouncer-green:
-    image: ghcr.io/track-my-bus-ireland/the-bouncer:latest
+    image: ghcr.io/track-my-bus-ireland/the-bouncer:develop
     container_name: the-bouncer-green
     networks:
       - track_my_bus_network
