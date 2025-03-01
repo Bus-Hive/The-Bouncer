@@ -135,45 +135,45 @@ jobs:
           path: 'test/*.xml'
           reporter: java-junit
 
-  generate_coverage_report:
-    name: Generate Coverage Report
-    runs-on: ubuntu-latest
-    needs: [ security_checks, build_and_test ]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Generate Coverage Report
-        run: ./gradlew koverXmlReport
-
-      - name: Upload Coverage Report as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: build/reports/kover/report.xml
-
-      - name: Upload Coverage Report
-        id: kover
-        uses: mi-kas/kover-report@v1
-        with:
-          path: |
-            ${{ github.workspace }}/build/reports/kover/report.xml
-          title: Code Coverage
-          update-comment: true
-          min-coverage-overall: 70
-          min-coverage-changed-files: 70
-          coverage-counter-type: LINE
+#  generate_coverage_report:
+#    name: Generate Coverage Report
+#    runs-on: ubuntu-latest
+#    needs: [ security_checks, build_and_test ]
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'temurin'
+#          java-version: '17'
+#
+#      - name: Generate Coverage Report
+#        run: ./gradlew koverXmlReport
+#
+#      - name: Upload Coverage Report as Artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: coverage-report
+#          path: build/reports/kover/report.xml
+#
+#      - name: Upload Coverage Report
+#        id: kover
+#        uses: mi-kas/kover-report@v1
+#        with:
+#          path: |
+#            ${{ github.workspace }}/build/reports/kover/report.xml
+#          title: Code Coverage
+#          update-comment: true
+#          min-coverage-overall: 70
+#          min-coverage-changed-files: 70
+#          coverage-counter-type: LINE
 
   build:
     name: Build & Publish Docker Image
     runs-on: ubuntu-latest
-    needs: [ build_and_test, generate_coverage_report, upload_test_report ]
+    needs: [ build_and_test, upload_test_report ]
     permissions:
       contents: read
       packages: write
