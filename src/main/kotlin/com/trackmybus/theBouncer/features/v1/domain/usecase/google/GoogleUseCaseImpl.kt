@@ -35,8 +35,6 @@ class GoogleUseCaseImpl(
                 return Result.Error(it)
             }
 
-        logger.info("Google tokens fetched successfully $googleTokens")
-
         val googleUser =
             googleRepository.fetchGoogleUserInfo(googleTokens.getDataOrNull()?.accessToken ?: "").onFailure {
                 return Result.Error(it)

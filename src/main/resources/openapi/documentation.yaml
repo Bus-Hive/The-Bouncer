@@ -419,6 +419,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /google/login:
+    get:
+      summary: Redirect to Google login URL
+      tags:
+        - google-auth
+      responses:
+        '302':
+          description: Redirect to Google login URL
+        '500':
+          description: Failed to get Google login URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /google/callback:
+    get:
+      summary: Handle Google login callback
+      tags:
+        - google-auth
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Login successful
+        '400':
+          description: Missing code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to handle callback
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     ErrorResponse:
