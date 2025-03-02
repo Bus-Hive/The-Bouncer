@@ -5,9 +5,9 @@ import com.trackmybus.theBouncer.core.result.ResultHandler.isFailure
 import com.trackmybus.theBouncer.core.result.ResultHandler.isSuccess
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.di.configureKoinUnitTest
-import com.trackmybus.theBouncer.features.v1.data.dao.user.UserDao
-import com.trackmybus.theBouncer.features.v1.data.model.AuthProvider
-import com.trackmybus.theBouncer.features.v1.data.model.User
+import com.trackmybus.theBouncer.features.v1.data.local.dao.user.UserDao
+import com.trackmybus.theBouncer.features.v1.data.local.model.AuthProvider
+import com.trackmybus.theBouncer.features.v1.data.local.model.User
 import com.trackmybus.theBouncer.features.v1.domain.repository.jwt.JwtRepository
 import io.ktor.server.config.MapApplicationConfig
 import io.ktor.server.testing.testApplication
@@ -61,6 +61,11 @@ class JwtRepositoryTest : KoinTest {
                     put("jwt.realm", "3600")
                     put("jwt.accessTokenValiditySeconds", "3600")
                     put("jwt.refreshTokenValiditySeconds", "3600")
+
+                    put("google.clientId", "clientId")
+                    put("google.clientSecret", "clientSecret")
+                    put("google.redirectUri", "redirectUri")
+                    put("google.grantType", "grantType")
                 }
                 setupConfig()
             }

@@ -1,9 +1,9 @@
 package com.trackmybus.theBouncer.features.v1.domain.mapper
 
-import com.trackmybus.theBouncer.features.v1.data.model.Permission
-import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroup
-import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroupPermission
-import com.trackmybus.theBouncer.features.v1.data.model.UserPermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.local.model.Permission
+import com.trackmybus.theBouncer.features.v1.data.local.model.PermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.local.model.PermissionGroupPermission
+import com.trackmybus.theBouncer.features.v1.data.local.model.UserPermissionGroup
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionDto
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionGroupDto
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionGroupPermissionDto

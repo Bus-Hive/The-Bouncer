@@ -2,8 +2,8 @@ package com.trackmybus.theBouncer.features.v1.domain.repository.permissionGroup
 
 import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.RootError
-import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroup
-import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroupPermission
+import com.trackmybus.theBouncer.features.v1.data.local.model.PermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.local.model.PermissionGroupPermission
 import java.util.UUID
 
 interface PermissionGroupRepository {

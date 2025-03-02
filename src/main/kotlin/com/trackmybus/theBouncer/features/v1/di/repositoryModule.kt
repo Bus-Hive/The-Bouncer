@@ -3,6 +3,8 @@
 package com.trackmybus.theBouncer.features.v1.di
 
 import com.trackmybus.theBouncer.di.getLogger
+import com.trackmybus.theBouncer.features.v1.domain.repository.google.GoogleRepository
+import com.trackmybus.theBouncer.features.v1.domain.repository.google.GoogleRepositoryImpl
 import com.trackmybus.theBouncer.features.v1.domain.repository.jwt.JwtRepository
 import com.trackmybus.theBouncer.features.v1.domain.repository.jwt.JwtRepositoryImpl
 import com.trackmybus.theBouncer.features.v1.domain.repository.passowrdHash.PasswordHashRepository
@@ -48,4 +50,5 @@ val repositoryModule =
         single<SessionRepository> { SessionRepositoryImpl(getLogger<SessionRepository>(), get()) }
         single<PasswordHashRepository> { PasswordHashRepositoryImpl(getLogger<PasswordHashRepository>(), get()) }
         single<JwtRepository> { JwtRepositoryImpl(getLogger<JwtRepository>(), get(), get(), get(), get()) }
+        single<GoogleRepository> { GoogleRepositoryImpl(get(), get()) }
     }

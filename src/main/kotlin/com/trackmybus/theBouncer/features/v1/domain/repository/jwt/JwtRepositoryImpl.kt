@@ -15,10 +15,10 @@ import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.ResultHandler.onFailure
 import com.trackmybus.theBouncer.core.result.RootError
 import com.trackmybus.theBouncer.core.result.errors.JwtError
-import com.trackmybus.theBouncer.features.v1.data.dao.session.SessionDao
-import com.trackmybus.theBouncer.features.v1.data.dao.user.UserDao
-import com.trackmybus.theBouncer.features.v1.data.model.Session
-import com.trackmybus.theBouncer.features.v1.data.model.User
+import com.trackmybus.theBouncer.features.v1.data.local.dao.session.SessionDao
+import com.trackmybus.theBouncer.features.v1.data.local.dao.user.UserDao
+import com.trackmybus.theBouncer.features.v1.data.local.model.Session
+import com.trackmybus.theBouncer.features.v1.data.local.model.User
 import com.trackmybus.theBouncer.features.v1.domain.dto.TokensDto
 import com.trackmybus.theBouncer.features.v1.domain.repository.permission.PermissionRepository
 import io.ktor.util.logging.Logger

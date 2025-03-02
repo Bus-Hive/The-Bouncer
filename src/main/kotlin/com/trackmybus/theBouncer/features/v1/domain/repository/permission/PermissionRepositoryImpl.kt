@@ -4,11 +4,11 @@ import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.ResultHandler.onFailure
 import com.trackmybus.theBouncer.core.result.ResultHandler.onSuccess
 import com.trackmybus.theBouncer.core.result.RootError
-import com.trackmybus.theBouncer.features.v1.data.dao.permission.PermissionDao
-import com.trackmybus.theBouncer.features.v1.data.dao.permissionGroup.PermissionGroupDao
-import com.trackmybus.theBouncer.features.v1.data.dao.permissionGroupPermission.PermissionGroupPermissionDao
-import com.trackmybus.theBouncer.features.v1.data.dao.userPermissionGroup.UserPermissionGroupDao
-import com.trackmybus.theBouncer.features.v1.data.model.Permission
+import com.trackmybus.theBouncer.features.v1.data.local.dao.permission.PermissionDao
+import com.trackmybus.theBouncer.features.v1.data.local.dao.permissionGroup.PermissionGroupDao
+import com.trackmybus.theBouncer.features.v1.data.local.dao.permissionGroupPermission.PermissionGroupPermissionDao
+import com.trackmybus.theBouncer.features.v1.data.local.dao.userPermissionGroup.UserPermissionGroupDao
+import com.trackmybus.theBouncer.features.v1.data.local.model.Permission
 import io.ktor.util.logging.Logger
 import java.util.UUID
 

@@ -2,7 +2,7 @@ package com.trackmybus.theBouncer.features.v1.domain.repository.permission
 
 import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.RootError
-import com.trackmybus.theBouncer.features.v1.data.model.Permission
+import com.trackmybus.theBouncer.features.v1.data.local.model.Permission
 import java.util.UUID
 
 interface PermissionRepository {

@@ -4,7 +4,7 @@ import com.trackmybus.theBouncer.config.AppConfig
 import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.ResultHandler.toLocalError
 import com.trackmybus.theBouncer.core.result.errors.DataError
-import com.trackmybus.theBouncer.features.v1.data.ScheduleSchemaInitializer
+import com.trackmybus.theBouncer.features.v1.data.local.ScheduleSchemaInitializer
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.util.logging.Logger

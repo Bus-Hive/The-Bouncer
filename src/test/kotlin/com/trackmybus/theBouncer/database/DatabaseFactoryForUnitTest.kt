@@ -3,7 +3,7 @@ package com.trackmybus.theBouncer.database
 import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.errors.DataError
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
-import com.trackmybus.theBouncer.features.v1.data.ScheduleSchemaInitializer
+import com.trackmybus.theBouncer.features.v1.data.local.ScheduleSchemaInitializer
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.Dispatchers

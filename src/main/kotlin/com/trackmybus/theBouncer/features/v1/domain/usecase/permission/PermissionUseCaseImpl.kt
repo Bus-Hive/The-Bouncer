@@ -3,7 +3,7 @@ package com.trackmybus.theBouncer.features.v1.domain.usecase.permission
 import com.trackmybus.theBouncer.core.mapper.ResultMapper.mapResult
 import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.RootError
-import com.trackmybus.theBouncer.features.v1.data.model.Permission
+import com.trackmybus.theBouncer.features.v1.data.local.model.Permission
 import com.trackmybus.theBouncer.features.v1.domain.dto.PermissionDto
 import com.trackmybus.theBouncer.features.v1.domain.mapper.DTOMapper.toDto
 import com.trackmybus.theBouncer.features.v1.domain.repository.permission.PermissionRepository
