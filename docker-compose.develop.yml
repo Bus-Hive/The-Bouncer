@@ -43,7 +43,7 @@ services:
       - "8090:8090"
 
   the-bouncer-blue:
-    image: ghcr.io/track-my-bus-ireland/the-bouncer:develop
+    image: ghcr.io/bus-hive/the-bouncer:develop
     container_name: the-bouncer-blue
     networks:
       - track_my_bus_network
