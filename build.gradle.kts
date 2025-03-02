@@ -40,6 +40,7 @@ tasks.test {
 }
 
 dependencies {
+    // Server dependencies
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-auth-jwt-jvm")
@@ -52,6 +53,11 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
+    // Client dependencies
+    implementation("io.ktor:ktor-client-jetty-jakarta")
+    implementation("io.ktor:ktor-client-content-negotiation")
+    implementation("io.ktor:ktor-client-logging")
+    testImplementation("io.ktor:ktor-client-mock")
     // Database dependencies
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("com.h2database:h2:$h2Version")

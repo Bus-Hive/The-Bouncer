@@ -2,7 +2,7 @@
 
 package com.trackmybus.theBouncer.features.v1.di
 
-import com.trackmybus.theBouncer.features.v1.data.ScheduleSchemaInitializer
+import com.trackmybus.theBouncer.features.v1.data.local.ScheduleSchemaInitializer
 import org.koin.dsl.module
 
 val featureDatabaseModule =

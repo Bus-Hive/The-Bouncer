@@ -2,6 +2,7 @@ package com.trackmybus.theBouncer.config
 
 import com.trackmybus.theBouncer.core.api.respondSuccess
 import com.trackmybus.theBouncer.features.v1.resource.emailAndPasswordRoutes
+import com.trackmybus.theBouncer.features.v1.resource.googleAuthRoutes
 import com.trackmybus.theBouncer.features.v1.resource.permissionGroupRoutes
 import com.trackmybus.theBouncer.features.v1.resource.permissionRoutes
 import com.trackmybus.theBouncer.features.v1.resource.tokenRoutes
@@ -45,6 +46,7 @@ fun Application.configureRouting() {
     tokenRoutes()
     permissionRoutes()
     permissionGroupRoutes()
+    googleAuthRoutes()
 }
 
 fun Application.healthRoutes() {

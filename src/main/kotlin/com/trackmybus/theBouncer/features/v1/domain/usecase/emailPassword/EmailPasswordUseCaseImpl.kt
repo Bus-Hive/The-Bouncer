@@ -5,9 +5,9 @@ import com.trackmybus.theBouncer.core.result.ResultHandler.onFailure
 import com.trackmybus.theBouncer.core.result.RootError
 import com.trackmybus.theBouncer.core.result.errors.HashError
 import com.trackmybus.theBouncer.core.result.errors.ValidationError
-import com.trackmybus.theBouncer.features.v1.data.model.AuthProvider
-import com.trackmybus.theBouncer.features.v1.data.model.User
-import com.trackmybus.theBouncer.features.v1.data.model.UserPermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.local.model.AuthProvider
+import com.trackmybus.theBouncer.features.v1.data.local.model.User
+import com.trackmybus.theBouncer.features.v1.data.local.model.UserPermissionGroup
 import com.trackmybus.theBouncer.features.v1.domain.dto.TokensDto
 import com.trackmybus.theBouncer.features.v1.domain.repository.jwt.JwtRepository
 import com.trackmybus.theBouncer.features.v1.domain.repository.passowrdHash.PasswordHashRepository

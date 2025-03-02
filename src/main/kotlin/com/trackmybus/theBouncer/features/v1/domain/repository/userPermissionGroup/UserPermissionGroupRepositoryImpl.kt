@@ -4,8 +4,8 @@ import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.ResultHandler.onFailure
 import com.trackmybus.theBouncer.core.result.ResultHandler.onSuccess
 import com.trackmybus.theBouncer.core.result.RootError
-import com.trackmybus.theBouncer.features.v1.data.dao.userPermissionGroup.UserPermissionGroupDao
-import com.trackmybus.theBouncer.features.v1.data.model.UserPermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.local.dao.userPermissionGroup.UserPermissionGroupDao
+import com.trackmybus.theBouncer.features.v1.data.local.model.UserPermissionGroup
 import io.ktor.util.logging.Logger
 import java.util.UUID
 

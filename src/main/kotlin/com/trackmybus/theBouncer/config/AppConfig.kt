@@ -43,12 +43,20 @@ data class JwtConfig(
     val refreshTokenValiditySeconds: Int,
 )
 
+data class GoogleConfig(
+    val clientId: String,
+    val clientSecret: String,
+    val redirectUri: String,
+    val grantType: String,
+)
+
 class AppConfig {
     lateinit var serverConfig: ServerConfig
     lateinit var postgresConfig: PostgresConfig
     lateinit var redisConfig: RedisConfig
     lateinit var passwordHashConfig: PasswordHashConfig
     lateinit var jwtConfig: JwtConfig
+    lateinit var googleConfig: GoogleConfig
 }
 
 fun Application.setupConfig() {
@@ -180,5 +188,18 @@ fun Application.setupConfig() {
             realm = jwtRealm,
             accessTokenValiditySeconds = jwtAccessTokenValiditySeconds,
             refreshTokenValiditySeconds = jwtRefreshTokenValiditySeconds,
+        )
+
+    // Google
+    val googleClientId = environment.config.property("google.clientId").getString()
+    val googleClientSecret = environment.config.property("google.clientSecret").getString()
+    val googleRedirectUri = environment.config.property("google.redirectUri").getString()
+    val googleGrantType = environment.config.property("google.grantType").getString()
+    appConfig.googleConfig =
+        GoogleConfig(
+            clientId = googleClientId,
+            clientSecret = googleClientSecret,
+            redirectUri = googleRedirectUri,
+            grantType = googleGrantType,
         )
 }

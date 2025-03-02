@@ -1,12 +1,12 @@
-package com.trackmybus.theBouncer.features.v1.data.dao
+package com.trackmybus.theBouncer.features.v1.data.local.dao
 
 import com.trackmybus.theBouncer.core.result.ResultHandler.isFailure
 import com.trackmybus.theBouncer.core.result.ResultHandler.isSuccess
 import com.trackmybus.theBouncer.database.postgres.DatabaseFactory
 import com.trackmybus.theBouncer.di.configureKoinUnitTest
-import com.trackmybus.theBouncer.features.v1.data.dao.permission.PermissionDao
-import com.trackmybus.theBouncer.features.v1.data.dao.permissionGroup.PermissionGroupDao
-import com.trackmybus.theBouncer.features.v1.data.model.PermissionGroup
+import com.trackmybus.theBouncer.features.v1.data.local.dao.permission.PermissionDao
+import com.trackmybus.theBouncer.features.v1.data.local.dao.permissionGroup.PermissionGroupDao
+import com.trackmybus.theBouncer.features.v1.data.local.model.PermissionGroup
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock

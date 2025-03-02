@@ -2,7 +2,7 @@ package com.trackmybus.theBouncer.features.v1.domain.repository.session
 
 import com.trackmybus.theBouncer.core.result.Result
 import com.trackmybus.theBouncer.core.result.RootError
-import com.trackmybus.theBouncer.features.v1.data.model.Session
+import com.trackmybus.theBouncer.features.v1.data.local.model.Session
 import java.util.UUID
 
 interface SessionRepository {

@@ -4,7 +4,7 @@ name: The-Bouncer
 
 services:
   the-bouncer-green:
-    image: ghcr.io/track-my-bus-ireland/the-bouncer:develop
+    image: ghcr.io/bus-hive/the-bouncer:develop
     container_name: the-bouncer-green
     networks:
       - track_my_bus_network
@@ -32,6 +32,13 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_ISSUER: ${JWT_ISSUER}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
+
+      # GOOGLE AUTH CONFIG
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+      GOOGLE_GRANT_TYPE: ${GOOGLE_GRANT_TYPE}
+
     ports:
       - "8090:8090"
 

@@ -12,6 +12,7 @@ fun Application.configureKoin() {
         modules(
             configModule,
             loggerModule,
+            networkModule,
             *featureModules.toTypedArray(),
         )
     }

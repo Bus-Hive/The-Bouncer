@@ -7,26 +7,26 @@ import com.trackmybus.theBouncer.core.result.errors.DataError
 import kotlinx.serialization.SerializationException
 
 object ResultMapper {
-    inline fun <D, reified E : RootError, R> Result<D, E>.mapResult(transform: (D) -> R?): Result<R, DataError.Local> =
+    inline fun <D, reified E : RootError, R> Result<D, E>.mapResult(transform: (D) -> R?): Result<R, E> =
         fold(
             onSuccess = { value ->
                 try {
                     val mappedValue = transform(value)
                     if (mappedValue == null) {
-                        Result.Error(DataError.Local.NullMappingResult)
+                        Result.Error<R, E>(DataError.Local.NullMappingResult as E)
                     } else {
-                        Result.Success(mappedValue)
+                        Result.Success<R, E>(mappedValue)
                     }
                 } catch (e: SerializationException) {
-                    Result.Error(DataError.Local.SerializationError)
+                    Result.Error<R, E>(DataError.Local.SerializationError as E)
                 } catch (e: IllegalArgumentException) {
-                    Result.Error(DataError.Local.InvalidDataType)
+                    Result.Error<R, E>(DataError.Local.InvalidDataType as E)
                 } catch (e: Exception) {
-                    Result.Error(DataError.Local.MappingFailed)
+                    Result.Error<R, E>(DataError.Local.MappingFailed as E)
                 }
             },
-            onFailure = { _ ->
-                Result.Error(DataError.Local.MappingFailed)
+            onFailure = { error ->
+                Result.Error<R, E>(error)
             },
         )
 }

@@ -50,6 +50,11 @@ fun configureKoinUnitTest() {
                 put("jwt.realm", "3600")
                 put("jwt.accessTokenValiditySeconds", "3600")
                 put("jwt.refreshTokenValiditySeconds", "3600")
+
+                put("google.clientId", "clientId")
+                put("google.clientSecret", "clientSecret")
+                put("google.redirectUri", "redirectUri")
+                put("google.grantType", "grantType")
             }
             setupConfig()
         }
