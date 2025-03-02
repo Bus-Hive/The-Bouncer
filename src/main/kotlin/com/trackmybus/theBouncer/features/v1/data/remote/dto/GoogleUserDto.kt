@@ -1,6 +1,5 @@
 package com.trackmybus.theBouncer.features.v1.data.remote.dto
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,5 +18,5 @@ data class GoogleUserDto(
     @SerialName("picture")
     val picture: String?,
     @SerialName("verified_email")
-    val verifiedEmail: Boolean?
+    val verifiedEmail: Boolean?,
 )

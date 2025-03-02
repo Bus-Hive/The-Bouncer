@@ -1,6 +1,5 @@
 package com.trackmybus.theBouncer.features.v1.data.remote.dto
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -15,5 +14,5 @@ data class GoogleTokenDto(
     @SerialName("scope")
     val scope: String?,
     @SerialName("token_type")
-    val tokenType: String?
+    val tokenType: String?,
 )
