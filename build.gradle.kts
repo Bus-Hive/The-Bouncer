@@ -21,7 +21,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.52.0"
 }
 
-group = "com.trackmybus.theKeg"
+group = "app.bushive.theBouncer"
 version = "0.0.1"
 
 application {
