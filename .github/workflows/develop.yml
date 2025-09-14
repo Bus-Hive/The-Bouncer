@@ -267,7 +267,7 @@ jobs:
 
       - name: Deploy Blue-Green with Kong
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 10201 << 'EOF'
             set -e
             cd ${{ vars.APP_DIR }}
             git pull origin develop
