@@ -257,16 +257,15 @@ jobs:
 
       - name: Setup SSH Key
         run: |
-          mkdir -p ~/.ssh
-          umask 077
-          cat > ~/.ssh/id_rsa <<'EOF'
-          ${{ secrets.SSH_PRIVATE_KEY }}
-          EOF
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts 2>/dev/null || true
-
-      - name: Add remote host to known_hosts
-        run: ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+            mkdir -p ~/.ssh
+            umask 077
+            cat > ~/.ssh/id_rsa <<'EOF'
+            ${{ secrets.SSH_PRIVATE_KEY }}
+            EOF
+            chmod 600 ~/.ssh/id_rsa
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            echo "UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+            chmod 600 ~/.ssh/config
 
       - name: Deploy Blue-Green with Kong
         run: |
