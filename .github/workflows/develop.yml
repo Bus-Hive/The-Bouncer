@@ -265,6 +265,9 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
+      - name: Add remote host to known_hosts
+        run: ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
       - name: Deploy Blue-Green with Kong
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -p 10201 << 'EOF'
