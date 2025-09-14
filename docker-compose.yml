@@ -35,10 +35,10 @@ services:
     ports:
       - "${DOCKER_PORT}:${PORT}"
     networks:
-      - track_my_bus_network
+      - bushive_network
 
 networks:
-  track_my_bus_network:
+  bushive_network:
     external: true
 
 volumes:
