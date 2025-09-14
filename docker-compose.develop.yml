@@ -7,7 +7,7 @@ services:
     image: ghcr.io/bus-hive/the-bouncer:develop
     container_name: the-bouncer-green
     networks:
-      - track_my_bus_network
+      - bushive_network
     environment:
       # SERVER CONFIG
       PORT: 8090
@@ -46,7 +46,7 @@ services:
     image: ghcr.io/bus-hive/the-bouncer:develop
     container_name: the-bouncer-blue
     networks:
-      - track_my_bus_network
+      - bushive_network
     environment:
       # SERVER CONFIG
       PORT: 8091
@@ -75,5 +75,5 @@ services:
       - "8091:8091"
 
 networks:
-  track_my_bus_network:
+  bushive_network:
     external: true
